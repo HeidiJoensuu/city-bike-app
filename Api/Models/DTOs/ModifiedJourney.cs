@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Api.Models.Models.DTOs
+namespace Api.Models.DTOs
 {
     [Keyless]
     public class ModifiedJourney

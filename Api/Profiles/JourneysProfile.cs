@@ -1,6 +1,6 @@
-﻿using Api.Models.Models.DTOs;
-using Api.Models.Models;
+﻿using Api.Models.Models;
 using AutoMapper;
+using Api.Models.DTOs;
 
 namespace Api.Profiles
 {

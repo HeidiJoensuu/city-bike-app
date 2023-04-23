@@ -1,6 +1,6 @@
 ﻿using Api.Models;
+using Api.Models.DTOs;
 using Api.Models.Models;
-using Api.Models.Models.DTOs;
 using Api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +21,12 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Journey>>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month)
+        public async Task<ActionResult<IEnumerable<Journey>>> GetJourneys(int offset, int limit, string order, string? search, bool descending, int month)
         {
+            if (search == null)
+            {
+                search = "";
+            }
             try
             {
                 return Ok(_mapper.Map<IEnumerable<ModifiedJourney>>( await _journeyService.GetJourneys(offset, limit, order, search, descending , month)));

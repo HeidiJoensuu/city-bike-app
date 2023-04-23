@@ -30,7 +30,7 @@ namespace Api.Services
                 _ => "[2021-07] ",
             };
 
-            var answer = await _dBContext.Journeys
+            return await _dBContext.Journeys
                 .FromSqlRaw($"SELECT * FROM  " + wantedMonth +
                 $"WHERE (LOWER([Departure_station_name]) LIKE '%' + @search +'%' OR LOWER([Return_station_name]) LIKE '%' + @search +'%') " +
                 $"ORDER BY " +
@@ -42,11 +42,8 @@ namespace Api.Services
                 $"(CASE WHEN @order = 'Duration' THEN [Duration] END) " + ascOrDesc + " " +
                 $"OFFSET @offset ROWS " +
                 $"FETCH NEXT @limit ROWS ONLY"
-                , new SqlParameter("@search", search.ToLower()), new SqlParameter("@order", order), new SqlParameter("@order", ascOrDesc), new SqlParameter("@offset", offset), new SqlParameter("@limit", limit))
+                , new SqlParameter("@search", search.ToLower()), new SqlParameter("@order", order), new SqlParameter("@offset", offset), new SqlParameter("@limit", limit))
                 .ToListAsync();
-
-            return answer;
-
         }
     }
 }
