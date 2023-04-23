@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LZJ4WJyxq4WX30UXR0qsMAa/NGI3ogxQ/vCKNqOQsREc4fr0meNLPlPzHFxvOvjgWOpMEGABoLEHwZcWiv6g2g==",
+  "dgSpecHash": "Fxx1A68wlzLe23Z1tuflPgfQziS82EnmwbQfPC7nVCqP1mq+P8K5r/C/vjlQdMavNQay7FECVKV/fWjH3031LA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Heidi\\source\\repos\\HeidiJoensuu\\city-bike-app\\Api\\Api.csproj",
+  "projectFilePath": "C:\\Users\\Heidi\\Documents\\Koodausta\\tyonhaku\\cityCike\\city-bike-app\\Api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Heidi\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Heidi\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

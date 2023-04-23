@@ -16,11 +16,5 @@ namespace Api.Models.Models
         public string Return_station_name { get; set; }
         public int Covered_distance { get; set; }
         public long Duration { get; set; }
-
-        public object testi(Journey j)
-        {
-            Console.WriteLine($"moii! {j}");
-            return j.Return_station_id;
-        }
     }
 }

@@ -21,15 +21,11 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Journey>>> GetJourneys(int offset, int limit, string order, string search, bool descending)
+        public async Task<ActionResult<IEnumerable<Journey>>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month)
         {
             try
             {
-                if (search == "null") { search = ""; }
-                var answ = await _journeyService.GetJourneys(offset, limit, order, search, descending);
-                Console.WriteLine(answ);
-
-                return Ok(_mapper.Map<IEnumerable<ModifiedJourney>>( await _journeyService.GetJourneys(offset, limit, order, search, descending)));
+                return Ok(_mapper.Map<IEnumerable<ModifiedJourney>>( await _journeyService.GetJourneys(offset, limit, order, search, descending , month)));
             }
             catch (Exception ex)
             {

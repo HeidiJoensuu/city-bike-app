@@ -5,6 +5,6 @@ namespace Api.Services
 {
     public interface IJourneyService
     {
-        Task<IEnumerable<Journey>> GetJourneys(int offset, int limit,string order, string search, bool descending);
+        Task<IEnumerable<Journey>> GetJourneys(int offset, int limit,string order, string search, bool descending, int month);
     }
 }
