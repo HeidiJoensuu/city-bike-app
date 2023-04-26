@@ -1,5 +1,6 @@
 ﻿using Api.Models;
 using Api.Models.Models;
+using Api.Utils;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,8 @@ namespace Api.Services
     public class JourneyService : IJourneyService
     {
         private readonly CityBikesDBContext _dBContext;
+        
+        private readonly Utilities _utilities = new Utilities();
 
         public JourneyService(CityBikesDBContext dBContext)
         {
@@ -17,18 +20,8 @@ namespace Api.Services
         public async Task<IEnumerable<Journey>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month)
         {
 
-            string ascOrDesc = "ASC";
-            if (descending)
-            {
-                ascOrDesc = "DESC";
-            }
-
-            string wantedMonth = month switch
-            {
-                5 => "[2021-05] ",
-                6 => "[2021-06] ",
-                _ => "[2021-07] ",
-            };
+            string ascOrDesc = _utilities.AscOrDesc(descending);
+            string wantedMonth = _utilities.WantedMonts(month);
 
             return await _dBContext.Journeys
                 .FromSqlRaw($"SELECT * FROM  " + wantedMonth +

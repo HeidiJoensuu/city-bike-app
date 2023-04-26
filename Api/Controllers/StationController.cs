@@ -1,4 +1,5 @@
-﻿using Api.Models.Models;
+﻿using Api.Models.DTOs;
+using Api.Models.Models;
 using Api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,23 @@ namespace Api.Controllers
             try
             {
                 return Ok(await _stationService.GetStations(offset, limit, order, search, descending));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<StationInfoDTO>> GetStationInfo(int id, int month)
+        {
+            Console.WriteLine(month);
+            if (month == null)
+            {
+                month = 0;
+            }
+            try
+            {
+                return Ok(_mapper.Map<StationInfoDTO>(await _stationService.GetStationInfo(id, month)));
             }
             catch (Exception ex)
             {

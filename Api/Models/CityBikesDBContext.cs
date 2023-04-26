@@ -9,12 +9,13 @@ namespace Api.Models
 
         public DbSet<Journey> Journeys { get; set; }
         public DbSet<Station> Stations { get; set; }
-        //public DbSet<StationInfo> StationsInfo { get; set; }
+        public DbSet<StationInfo> StationsInfo { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Journey>();
             modelBuilder.Entity<Station>();
+            modelBuilder.Entity<StationInfo>();
         }
 
 
