@@ -3,14 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models.Models
 {
-    [Keyless]
+    [Table("kaupunkipyoraasemat")]
     public class StationInfo
     {
-        
+        public int Id { get; set; }
+        public int FID { get; set; }
+        public string Nimi { get; set; }
+        public string Namn { get; set; }
         public string Name { get; set; }
-        
+        public string Osoite { get; set; }
         public string Adress { get; set; }
-        
+
         public string x { get; set; } //Having problems with floats in sql server
         
         public string y { get; set; }

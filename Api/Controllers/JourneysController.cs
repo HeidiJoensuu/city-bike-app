@@ -36,5 +36,18 @@ namespace Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost]
+        public async Task<ActionResult<Journey>> PostJourney(Journey journey)
+        {
+            try
+            {
+                await _journeyService.CreateJourney(journey);
+                return CreatedAtAction(nameof(GetJourneys), journey);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

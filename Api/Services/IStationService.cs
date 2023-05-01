@@ -1,4 +1,5 @@
-﻿using Api.Models.Models;
+﻿using Api.Models.DTOs;
+using Api.Models.Models;
 
 namespace Api.Services
 {
@@ -6,5 +7,6 @@ namespace Api.Services
     {
         Task<IEnumerable<Station>> GetStations(int offset, int limit, string order, string search, bool descending);
         Task<StationInfo> GetStationInfo(int id, int month);
+        Task<NewStationDto> CreateStation(NewStationDto newStationDto);
     }
 }

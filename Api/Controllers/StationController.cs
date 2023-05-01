@@ -52,5 +52,18 @@ namespace Api.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost]
+        public async Task<ActionResult<Station>> PostStation(NewStationDto dto)
+        {
+            try
+            {
+                var station = _mapper.Map<Station>(await _stationService.CreateStation(dto));
+                return CreatedAtAction(nameof(GetStations), new { id = station.Id }, station);
+            } 
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
