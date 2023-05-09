@@ -6,7 +6,7 @@ namespace Api.Services
     public interface IStationService
     {
         Task<IEnumerable<Station>> GetStations(int offset, int limit, string order, string search, bool descending);
-        Task<StationInfo> GetStationInfo(int id, int month);
-        Task<NewStationDto> CreateStation(NewStationDto newStationDto);
+        Task<StationInfoDTO> GetStationInfo(int id, int month);
+        Task<Station> CreateStation(Station saveStationDto);
     }
 }

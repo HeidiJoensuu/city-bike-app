@@ -8,11 +8,11 @@ namespace Api.Profiles
     {
         public JourneysProfile() 
         {
-            CreateMap<Journey, ModifiedJourney>()
+            CreateMap<JourneyAbstract, ModifiedJourneyDto>()
                 .ForMember(dto => dto.Covered_distance, options =>
-                options.MapFrom(j => Math.Round((float)j.Covered_distance / 1000, 2)))
+                options.MapFrom(journey => Math.Round((float)journey.Covered_distance_m / 1000, 2)))
                 .ForMember(dto => dto.Duration, options => 
-                options.MapFrom(j => j.Duration/60));
+                options.MapFrom(journey => journey.Duration_sec/60));
         }
     }
 }

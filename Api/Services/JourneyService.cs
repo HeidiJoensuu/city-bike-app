@@ -1,8 +1,10 @@
-﻿using Api.Models;
+﻿using Api.Exceptions;
+using Api.Models;
 using Api.Models.Models;
 using Api.Utils;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Security.Cryptography;
 
 namespace Api.Services
@@ -10,64 +12,400 @@ namespace Api.Services
     public class JourneyService : IJourneyService
     {
         private readonly CityBikesDBContext _dBContext;
-        
-        private readonly Utilities _utilities = new Utilities();
 
         public JourneyService(CityBikesDBContext dBContext)
         {
             _dBContext = dBContext;
         }
 
-        public async Task<Journey> CreateJourney(Journey journey)
+        public async Task<JourneyAbstract> CreateJourney(JourneyAbstract journey)
         {
-            var jtn = _dBContext.Journeys.Where(j => j
-                .Departure_station_id == journey.Departure_station_id)
-                .Where(j => j.Departure_station_name == journey.Departure_station_name)
-                .Where(j => j.Return_station_id == journey.Return_station_id)
-                .Where(j => j.Return_station_name == journey.Return_station_name).FirstOrDefault();
-            
-            if (jtn == null)
+            var departureStation = _dBContext.Stations.Where(station => station.Id == journey.Departure_station_id && station.Nimi == journey.Departure_station_name).FirstOrDefault();
+            var returnStation = _dBContext.Stations.Where(station => station.Id == journey.Return_station_id && station.Nimi == journey.Return_station_name).FirstOrDefault();
+
+            if (returnStation == null)
             {
-                throw new Exception();
+                throw new InvalidInputException("Return_station", journey.Return_station_id, journey.Return_station_name);
+            }
+            if (departureStation == null)
+            {
+                throw new InvalidInputException("Departure_station", journey.Departure_station_id, journey.Departure_station_name);
+            }
+            if (journey.Covered_distance_m < 10)
+            {
+                throw new InvalidInputException("Covered_distance_m", journey.Covered_distance_m);
+            }
+            if (journey.Duration_sec < 10)
+            {
+                throw new InvalidInputException("Duration_sec", journey.Duration_sec);
+            }
+            if (journey.Departure.Year != 2021)
+            {
+                throw new InvalidInputException("Departure", journey.Departure.ToString());
+            }
+            if (journey.Return.Year != 2021 || DateTime.Compare(journey.Departure, journey.Return) >= 0)
+            {
+                throw new InvalidInputException("Departure", journey.Return.ToString());
             }
 
-            var month = _utilities.WantedMonts(journey.Departure.Month);
+            switch (journey.Departure.Month)
+            {
+                case 5:
+                    May may = JsonConvert.DeserializeObject<May>(JsonConvert.SerializeObject(journey));
+                    await _dBContext.Mays.AddAsync(may);
+                    await _dBContext.SaveChangesAsync();
+                    return may;
+                case 6:
+                    June june = JsonConvert.DeserializeObject<June>(JsonConvert.SerializeObject(journey));
+                    await _dBContext.Junes.AddAsync(june);
+                    await _dBContext.SaveChangesAsync();
+                    return june;
+                case 7:
+                    July july = JsonConvert.DeserializeObject<July>(JsonConvert.SerializeObject(journey));
+                    await _dBContext.Julys.AddAsync(july);
+                    await _dBContext.SaveChangesAsync();
+                    return july;
+                default:
+                    throw new InvalidInputException("Departure", journey.Departure.ToString());
+            }
 
-            await _dBContext.Database
-                .ExecuteSqlRawAsync($"INSERT INTO {month} (Departure, [Return], Departure_station_id, Departure_station_name, Return_station_id, Return_station_name, Covered_distance, Duration) " +
-                $"VALUES (@Departure, @Return, @Departure_station_id, @Departure_station_name, @Return_station_id, @Return_station_name, @Covered_distance, @Duration)"
-                , new SqlParameter("@Departure", journey.Departure)
-                , new SqlParameter("@Return", journey.Return)
-                , new SqlParameter("@Departure_station_id", journey.Departure_station_id)
-                , new SqlParameter("@Departure_station_name", journey.Departure_station_name)
-                , new SqlParameter("@Return_station_id", journey.Return_station_id)
-                , new SqlParameter("@Return_station_name", journey.Return_station_name)
-                , new SqlParameter("@Covered_distance", (int)journey.Covered_distance)
-                , new SqlParameter("@Duration", (long)journey.Duration));
-
-            return journey;
         }
 
-        public async Task<IEnumerable<Journey>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month)
+        public async Task<IEnumerable<JourneyAbstract>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month)
         {
-
-            string ascOrDesc = _utilities.AscOrDesc(descending);
-            string wantedMonth = _utilities.WantedMonts(month);
-
-            return await _dBContext.Journeys
-                .FromSqlRaw($"SELECT * FROM  " + wantedMonth +
-                $"WHERE (LOWER([Departure_station_name]) LIKE '%' + @search +'%' OR LOWER([Return_station_name]) LIKE '%' + @search +'%') " +
-                $"ORDER BY " +
-                $"(CASE WHEN @order = 'Departure' THEN [Departure] END) " + ascOrDesc + ", " +
-                $"(CASE WHEN @order = 'Return' THEN [Return] END) " + ascOrDesc + ", " +
-                $"(CASE WHEN @order = 'Departure_station_name' THEN [Departure_station_name] END) " + ascOrDesc + ", " +
-                $"(CASE WHEN @order = 'Return_station_name' THEN [Return_station_name] END) " + ascOrDesc + ", " +
-                $"(CASE WHEN @order = 'Covered_distance' THEN [Covered_distance] END) " + ascOrDesc + ", " +
-                $"(CASE WHEN @order = 'Duration' THEN [Duration] END) " + ascOrDesc + " " +
-                $"OFFSET @offset ROWS " +
-                $"FETCH NEXT @limit ROWS ONLY"
-                , new SqlParameter("@search", search.ToLower()), new SqlParameter("@order", order), new SqlParameter("@offset", offset), new SqlParameter("@limit", limit))
-                .ToListAsync();
+            switch (order)
+            {
+                case "Departure":
+                    if (month == 5)
+                    {
+                        if (descending)
+                        {
+                            return  await _dBContext.Mays
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Departure)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Mays
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Departure)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else if (month == 6)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Junes
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Departure)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Junes
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Departure)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Julys
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Departure)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Julys
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Departure)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                case "Return":
+                    if (month == 5)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Mays
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Return)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Mays
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Return)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else if (month == 6)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Junes
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Return)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Junes
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Return)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Julys
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Return)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Julys
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Return)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                case "Departure_station_name":
+                    if (month == 5)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Mays
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Departure_station_name)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Mays
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Departure_station_name)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else if (month == 6)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Junes
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Departure_station_name)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Junes
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Departure_station_name)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Julys
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Departure_station_name)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Julys
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Departure_station_name)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                case "Return_station_name":
+                    if (month == 5)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Mays
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Return_station_name)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Mays
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Return_station_name)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else if (month == 6)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Junes
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Return_station_name)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Junes
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Return_station_name)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Julys
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Return_station_name)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Julys
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Return_station_name)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                case "Covered_distance":
+                    if (month == 5)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Mays
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Covered_distance_m)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Mays
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Covered_distance_m)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else if (month == 6)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Junes
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Covered_distance_m)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Junes
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Covered_distance_m)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Julys
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Covered_distance_m)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Julys
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Covered_distance_m)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                default:
+                    if (month == 5)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Mays
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Duration_sec)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Mays
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Duration_sec)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else if (month == 6)
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Junes
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Duration_sec)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Junes
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Duration_sec)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+                    else
+                    {
+                        if (descending)
+                        {
+                            return await _dBContext.Julys
+                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                                .OrderByDescending(journey => journey.Duration_sec)
+                                .Skip(offset)
+                                .Take(limit)
+                                .ToListAsync();
+                        }
+                        return await _dBContext.Julys
+                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
+                            .OrderBy(journey => journey.Duration_sec)
+                            .Skip(offset)
+                            .Take(limit)
+                            .ToListAsync();
+                    }
+            }
         }
     }
 }

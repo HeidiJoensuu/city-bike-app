@@ -21,7 +21,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Journey>>> GetJourneys(int offset, int limit, string order, string? search, bool descending, int month)
+        public async Task<ActionResult<IEnumerable<JourneyAbstract>>> GetJourneys(int offset, int limit, string order, string? search, bool descending, int month)
         {
             if (search == null)
             {
@@ -29,7 +29,7 @@ namespace Api.Controllers
             }
             try
             {
-                return Ok(_mapper.Map<IEnumerable<ModifiedJourney>>( await _journeyService.GetJourneys(offset, limit, order, search, descending , month)));
+                return Ok(_mapper.Map<IEnumerable<ModifiedJourneyDto>>( await _journeyService.GetJourneys(offset, limit, order, search, descending , month)));
             }
             catch (Exception ex)
             {
@@ -37,12 +37,12 @@ namespace Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult<Journey>> PostJourney(Journey journey)
+        public async Task<ActionResult<JourneyAbstract>> PostJourney(Journey journey)
         {
             try
             {
-                await _journeyService.CreateJourney(journey);
-                return CreatedAtAction(nameof(GetJourneys), journey);
+                var answer = await _journeyService.CreateJourney(journey);
+                return CreatedAtAction(nameof(GetJourneys), answer);
             }
             catch (Exception ex)
             {

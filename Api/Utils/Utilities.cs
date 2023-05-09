@@ -4,7 +4,7 @@
     {
         public Utilities() { }
 
-        public string WantedMonts (int month)
+        public string WantedMont (int month)
         {
             return month switch
             {

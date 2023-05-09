@@ -28,7 +28,7 @@ namespace Api.Controllers
             }
             try
             {
-                return Ok(await _stationService.GetStations(offset, limit, order, search, descending));
+                return Ok(_mapper.Map<IEnumerable<StationDto>>(await _stationService.GetStations(offset, limit, order, search, descending)));
             }
             catch (Exception ex)
             {
@@ -57,7 +57,8 @@ namespace Api.Controllers
         {
             try
             {
-                var station = _mapper.Map<Station>(await _stationService.CreateStation(dto));
+                var saveStation = _mapper.Map<Station>(dto);
+                var station = _mapper.Map<StationDto>(await _stationService.CreateStation(saveStation));
                 return CreatedAtAction(nameof(GetStations), new { id = station.Id }, station);
             } 
             catch (Exception ex)
