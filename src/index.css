@@ -1,0 +1,34 @@
+body {
+  margin: 0px;
+}
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ReactFlagsSelect-module_selectBtn__19wW7 {
+  border: 0px
+}
+.ReactFlagsSelect-module_flagsSelectInline__cUnnz{
+  position: fixed;
+  right: 26px;
+  top: 26px;
+}
+
+.ReactFlagsSelect-module_selectValue__152eS {
+  padding: 0px;
+}
+
+.navUl li a{
+  all: unset
+}
+
+
+@media only screen and (max-width:600px) {
+  .ReactFlagsSelect-module_flagsSelectInline__cUnnz{
+    position: fixed;
+    right: 0px;
+    top: 0px;
+  }
+}
