@@ -6,6 +6,7 @@ import { useState } from "react"
 import { NavLink, redirect } from "react-router-dom"
 import ReactFlagsSelect from "react-flags-select"
 import { strings } from "../utils/localization"
+import { Height } from "@mui/icons-material"
 
 /**
  * 
@@ -13,16 +14,9 @@ import { strings } from "../utils/localization"
  */
 const Navbar = ({ language, changeLanguageHandler }) => {
   const small = useMediaQuery(theme.breakpoints.down("laptop"))
-  const [selected, setSelected] = useState(language.toUpperCase())
 
-
-  console.log(location.pathname.split('/')[1])
-  const checkCurrentPage = (page) => {
-    if (location.pathname.split('/')[1] === page) return true
-    return false
-  }
-  const handleLanguageSelection = (code) => {
-
+  const checkCurrentPage = () => {
+    return location.pathname.split('/')[1]
   }
 
   return (
@@ -42,31 +36,33 @@ const Navbar = ({ language, changeLanguageHandler }) => {
         sx = {{
           direction:"row",
           justifyContent: small ? "center" : "space-between",
-          alignItems:"center"
+          alignItems:"center",
         }}
-        
       >
-        <Grid item style={{position: small ? '' : 'relative', marginLeft: small ? '' : '-100px'}}><img src={imageCycle} style={{maxWidth:"100%", maxHeight: "405px"}}/></Grid>
+        <Grid item style={{position: small ? '' : 'relative', marginLeft: small ? '' : '-100px'}}>
+          <img src={imageCycle} style={{maxWidth:"100%", maxHeight: small ? "200px" : "300px"}}/>
+        </Grid>
         
-        <Grid item><img src={imageTitle} style={{maxWidth:"100%"}}/></Grid>
+        <Grid item>
+          <img src={imageTitle} style={{maxWidth:"100%", maxHeight: small ? "160px" : "300px"}}/>
+        </Grid>
         
         <Grid item></Grid>
       </Grid>
       <Grid>
         <ButtonGroup variant="text" size="large">
           <Button
-            color={checkCurrentPage("stations") ? 'secondary' : 'primary'}
-            style={{fontSize:"30px"}}
+            color={checkCurrentPage() === "stations" ? 'secondary' : 'primary'}
+            
           >
-            <NavLink to={"/stations"} style={{all:"unset"}}>
+            <NavLink to={"/stations"} style={{marginRight: "30px"}}className="navButton">
               {strings.stations}
             </NavLink>
           </Button>
           <Button
-            color={checkCurrentPage("journeys") ? 'secondary' : 'primary'}
-            style={{fontSize:"30px"}}
+            color={checkCurrentPage() === "journeys" ? 'secondary' : 'primary'}
           >
-            <NavLink to={"/journeys"} style={{all:"unset"}}>
+            <NavLink to={"/journeys"} style={{marginLeft: "30px"}} className="navButton">
               {strings.journeys}
             </NavLink>
           </Button>

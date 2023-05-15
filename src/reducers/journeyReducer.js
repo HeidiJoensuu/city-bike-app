@@ -16,28 +16,31 @@ export const journeysSlice = createSlice({
   initialState: {
     journeyList: [],
     error: null,
-    loading: false
+    loadingJourneysJourneys: false
   },
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getJourneysAsList.fulfilled, (state, action) => {
-      if (state.loading) state.loading = false
+      if (state.loadingJourneys) state.loadingJourneys = false
       state.journeyList = action.payload
     }),
     builder.addCase(createJourney.fulfilled, (state, action) => {
-      if (state.loading) state.loading = false
+      if (state.loadingJourneys) state.loadingJourneys = false
       state.journeyList = [...state.journeyList, action.payload]
     }),
     builder.addCase(getJourneysAsList.pending, (state, action) => {
-      if (!state.loading) state.loading = true
+      if (!state.loadingJourneys) state.loadingJourneys = true
     })
     builder.addCase(getJourneysAsList.rejected, (state, action) => {
-      if (state.loading) state.loading = false
+      if (state.loadingJourneys) state.loadingJourneys = false
       state.error = `getJourneysAsList: ${action.error.message}` 
     }),
     builder.addCase(createJourney.rejected, (state, action) => {
-      if (state.loading) state.loading = false
+      if (state.loadingJourneys) state.loadingJourneys = false
       state.error = `createJourney: ${action.error.message}`
     })
   }
 })
+
+export const {} = journeysSlice.actions
+export default journeysSlice.reducer

@@ -1,6 +1,9 @@
 body {
   margin: 0px;
 }
+a {
+  text-decoration: none;
+}
 .App {
   display: flex;
   flex-direction: column;
@@ -11,7 +14,7 @@ body {
   border: 0px
 }
 .ReactFlagsSelect-module_flagsSelectInline__cUnnz{
-  position: fixed;
+  position: absolute;
   right: 26px;
   top: 26px;
 }
@@ -23,12 +26,35 @@ body {
 .navUl li a{
   all: unset
 }
+.processPaper{
+  position: fixed;
+  z-index: 2;
+  left: 20px;
+  bottom: 20px;
+}
 
+.searchInput{
+width: 600px;
+}
+.navButton{
+  font-size: 30px;
+  color: unset;
+}
+
+@media only screen and (max-width:1004px) {
+  .navButton{ 
+    font-size: 20px;
+  }
+}
 
 @media only screen and (max-width:600px) {
   .ReactFlagsSelect-module_flagsSelectInline__cUnnz{
-    position: fixed;
+    position: absolute;
     right: 0px;
     top: 0px;
   }
+  .searchInput{
+    width: 100%;
+  }
 }
+

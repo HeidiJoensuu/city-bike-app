@@ -31,7 +31,7 @@ module.exports = {
     "react/prop-types": "off",
     "no-empty-pattern": "warn",
     "react-hooks/exhaustive-deps": "off",
-    "require-jsdoc": ["warn", {
+    /*"require-jsdoc": ["warn", {
       "require": {
         "FunctionDeclaration": true,
         "MethodDefinition": true,
@@ -39,7 +39,7 @@ module.exports = {
         "ArrowFunctionExpression": true,
         "FunctionExpression": true
       }
-    }],
+    }],*/
     //"valid-jsdoc": "warn"
   }
 }

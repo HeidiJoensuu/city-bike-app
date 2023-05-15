@@ -1,6 +1,10 @@
 import axios from "axios"
 import { config } from '../utils/config'
 
+const headers = {
+  'Content-Type': 'application/json, text/plain'
+}
+
 /**
  * Fetch list of stations from api
  * @param {Number} data.offset
@@ -24,7 +28,7 @@ export const getStations = async (data) => {
  * @returns {Object} Response from api
  */
 export const getStationInfo = async (data) => {
-  const url = `${config.url}Station/${data.id}${data.search ? `?month=${data.month}` : ``}`
+  const url = `${config.url}Station/${data.id}${data.month ? `?month=${data.month}` : ``}`
   const response = await axios.get(url)
   return response.data
 }
@@ -44,5 +48,11 @@ export const getStationInfo = async (data) => {
 export const postStation = async (data) => {
   const url = `${config.url}Station`
   const response = await axios.post(url, data)
+  return response.data
+}
+
+export const getNumberOfStations = async (data) => {
+  const url = `${config.url}Station/count${data.search ? `?search=${data.search}` : ``}`
+  const response = await axios.get(url)
   return response.data
 }

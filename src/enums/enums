@@ -6,10 +6,3 @@ const Order = {
   Covered_distance: "Covered_distance",
   Duration: "Duration"
 }
-const Order2 = {
-  Nimi: "Nimi",
-  Namn: "Namn",
-  Name: "Name",
-  Osoite: "Osoite",
-  Adress: "Adress"
-}

@@ -53,7 +53,7 @@ export const strings = new LocalizedStrings({
     return: "Returnerad",
     capacity: "Kapacitet",
     name: "Namn",
-    address: "adress",
+    address: "Adress",
     counfOfDepartures: "Antal avgångar",
     countOfReturns: "Antal returer",
     avDistanceDepartures: "Genomsnittligt avstånd av avgångar",
