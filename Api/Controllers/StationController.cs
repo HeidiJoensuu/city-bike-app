@@ -28,7 +28,7 @@ namespace Api.Controllers
             }
             try
             {
-                return Ok(_mapper.Map<IEnumerable<StationDto>>(await _stationService.GetStations(offset, limit, order, search, descending)));
+                return base.Ok(_mapper.Map<IEnumerable<StationDto>>(await _stationService.GetStations(offset, limit, order, search, descending)));
             }
             catch (Exception ex)
             {
@@ -61,6 +61,22 @@ namespace Api.Controllers
                 var station = _mapper.Map<StationDto>(await _stationService.CreateStation(saveStation));
                 return CreatedAtAction(nameof(GetStations), new { id = station.Id }, station);
             } 
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetStationCount(string? search)
+        {
+            if (search == null)
+            {
+                search = "";
+            }
+            try
+            {
+                return Ok(await _stationService.GetStationCount(search));
+            }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);

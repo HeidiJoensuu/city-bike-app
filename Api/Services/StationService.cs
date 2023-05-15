@@ -186,6 +186,7 @@ namespace Api.Services
                             || s.Osoite.ToLower().Contains(search.ToLower())
                             || s.Adress.ToLower().Contains(search.ToLower()))
                             .OrderBy(s => s.Nimi).Skip(offset).Take(limit).ToListAsync();
+
                     }
                 case "Namn":
                     if (descending)
@@ -272,6 +273,15 @@ namespace Api.Services
                             .OrderBy(s => s.Adress).Skip(offset).Take(limit).ToListAsync();
                     }
             }
+        }
+        public async Task<int> GetStationCount(string search)
+        {
+            return await _dBContext.Stations.Where(s =>
+                            s.Nimi.ToLower().Contains(search.ToLower())
+                            || s.Namn.ToLower().Contains(search.ToLower())
+                            || s.Name.ToLower().Contains(search.ToLower())
+                            || s.Osoite.ToLower().Contains(search.ToLower())
+                            || s.Adress.ToLower().Contains(search.ToLower())).CountAsync();
         }
     }
 }
