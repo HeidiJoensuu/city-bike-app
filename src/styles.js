@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { TableCell, TableRow, createTheme, tableCellClasses } from "@mui/material";
+import { Button, Grid, TableCell, TableRow, ToggleButtonGroup, createTheme, tableCellClasses } from "@mui/material";
 import {enUS, fiFI, svSE} from '@mui/material/locale'
 
 
@@ -8,9 +8,15 @@ export const theme = createTheme(
     typography: {
       fontFamily: 'Georgia',
       body1: {
-        fontStyle: 'italic'
+        fontStyle: 'italic',
+        //color: '#007c86',
+      },
+      subtitle1: {
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: '#007c86',
       }
-      
     },
     palette: {
       primary: {
@@ -48,3 +54,11 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     color: theme.palette.primary.dark,
   },
 }))
+
+export const ReturnButton = styled(Button)({
+  textTransform: "none"
+})
+
+export const ListGrid = styled(Grid)({
+  marginBottom:"20px"
+})

@@ -37,6 +37,7 @@ const Navbar = ({ language, changeLanguageHandler }) => {
           direction:"row",
           justifyContent: small ? "center" : "space-between",
           alignItems:"center",
+          
         }}
       >
         <Grid item style={{position: small ? '' : 'relative', marginLeft: small ? '' : '-100px'}}>
@@ -49,7 +50,7 @@ const Navbar = ({ language, changeLanguageHandler }) => {
         
         <Grid item></Grid>
       </Grid>
-      <Grid>
+      <Grid sx={{marginBottom: "25px"}}>
         <ButtonGroup variant="text" size="large">
           <Button
             color={checkCurrentPage() === "stations" ? 'secondary' : 'primary'}

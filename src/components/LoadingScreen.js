@@ -3,7 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 const LoadingScreen = () => {
   return (
     <div className="processPaper">
-      <CircularProgress />
+      <CircularProgress size={100}/>
     </div>
   )
 }

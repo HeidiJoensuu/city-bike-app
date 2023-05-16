@@ -40,7 +40,17 @@ width: 600px;
   font-size: 30px;
   color: unset;
 }
-
+.css-1kc97d-MuiButtonBase-root-MuiToggleButton-root{
+  color: #000;
+}
+.map {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  top: 0;
+  bottom: 0;
+  position: relative;
+}
 @media only screen and (max-width:1004px) {
   .navButton{ 
     font-size: 20px;

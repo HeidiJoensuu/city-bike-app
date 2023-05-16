@@ -26,7 +26,7 @@ const StationsList = () => {
   const { stationList, stationsCount } = useSelector(state => state.stations)
   const [wantedData, setWantedData] = useState({
     offset:0,
-    limit:50,
+    limit:20,
     order: OrderNames.Nimi,
     search: "",
     desc: false
@@ -145,7 +145,7 @@ const StationsList = () => {
   }
 
   return (
-    <Paper elevation={0} style={{width: "100%", display:"grid", justifyItems:"end"}}>
+    <Paper elevation={0} style={{width: "100%", display:"grid", justifyItems:"end", marginBottom: "25px"}}>
       <TextField
         variant="outlined"
         id="filled-basic"
