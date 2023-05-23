@@ -12,7 +12,14 @@ import { config } from '../utils/config'
  * @returns {Object} Response from api
  */
 export const getJourneys = async (data) => {
-  const url = `${config.url}Journeys?offset=${data.offset}&limit=${data.limit}&order=${data.order}&${data.search ? `search=${data.search}&` : ``}descending=${data.desc}&month=${data.month}`
+  let url = `${config.url}Journeys?offset=${data.offset}&limit=${data.limit}&order=${data.order}&descending=${data.desc}&month=${data.month}`
+  url += `${data.search ? `&search=${data.search}` : ``}`
+  url += `${data.departure ? `&departure=${data.departure}` : ``}`
+  url += `${data.return ? `&return=${data.return}` : ``}`
+  url += `${data.distanceMin ? `&distanceMin=${data.distanceMin}` : ``}`
+  url += `${data.distanceMax ? `&distanceMax=${data.distanceMax}` : ``}`
+  url += `${data.durationMin ? `&durationMin=${data.durationMin}` : ``}`
+  url += `${data.durationMax ? `&durationMax=${data.durationMax}` : ``}`
   const response = await axios.get(url)
   return response.data
 }
@@ -32,8 +39,8 @@ export const getJourneys = async (data) => {
 export const postJourney = async (data) => {
   const templateData = {
       "id": 0,
-      "departure": new Date("2021-05-09T08:23:41.676Z"),
-      "return": new Date("2021-05-09T08:27:41.676Z"),
+      "departure": new Date("2021-05-09T08:13:41.676Z"),
+      "return": new Date("2021-05-09T08:17:41.676Z"),
       "departure_station_id": 579,
       "departure_station_name": "Niittymaa",
       "return_station_id": 639,
@@ -42,5 +49,18 @@ export const postJourney = async (data) => {
       "duration_sec": 300
   }
   const response = await axios.post(`${config.url}Journeys`, templateData)
+  return response.data
+}
+
+export const getJourneysCounted =async (data) => {
+  let url = `${config.url}Journeys/count?month=${data.month}`
+  url += `${data.search ? `&search=${data.search}` : ``}`
+  url += `${data.departure ? `&departure=${data.departure}` : ``}`
+  url += `${data.return ? `&return=${data.return}` : ``}`
+  url += `${data.distanceMin ? `&distanceMin=${data.distanceMin}` : ``}`
+  url += `${data.distanceMax ? `&distanceMax=${data.distanceMax}` : ``}`
+  url += `${data.durationMin ? `&durationMin=${data.durationMin}` : ``}`
+  url += `${data.durationMax ? `&durationMax=${data.durationMax}` : ``}`
+  const response = await axios.get(url)
   return response.data
 }

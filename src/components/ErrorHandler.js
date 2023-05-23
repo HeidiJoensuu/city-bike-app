@@ -14,7 +14,7 @@ const ErrorHandler = () => {
 
   if (error.target && !openSnackbar) {
     setOpenSnackbar(true)
-    console.log(error);
+    console.log(error)
   }
 
   /**
@@ -28,7 +28,7 @@ const ErrorHandler = () => {
 
   return (
     <>
-      <Snackbar open={openSnackbar} onClose={() => handleSnackbarClose}>
+      <Snackbar open={openSnackbar} onClose={handleSnackbarClose}>
         <Alert onClose={handleSnackbarClose} severity="warning">
           {error.target} {error.message.message}
         </Alert>

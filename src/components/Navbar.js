@@ -56,14 +56,14 @@ const Navbar = ({ language, changeLanguageHandler }) => {
             color={checkCurrentPage() === "stations" ? 'secondary' : 'primary'}
             
           >
-            <NavLink to={"/stations"} style={{marginRight: "30px"}}className="navButton">
+            <NavLink to={"/stations"} style={{marginRight: "30px"}}className="navButton" onClick={() => sessionStorage.setItem("page", 0)}>
               {strings.stations}
             </NavLink>
           </Button>
           <Button
             color={checkCurrentPage() === "journeys" ? 'secondary' : 'primary'}
           >
-            <NavLink to={"/journeys"} style={{marginLeft: "30px"}} className="navButton">
+            <NavLink to={"/journeys"} style={{marginLeft: "30px"}} className="navButton" onClick={() => sessionStorage.setItem("page", 0)}>
               {strings.journeys}
             </NavLink>
           </Button>

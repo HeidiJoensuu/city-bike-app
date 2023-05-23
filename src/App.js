@@ -43,6 +43,7 @@ const App = () => {
       return "svSE"
     }
   }
+  if (!sessionStorage.getItem("page")) sessionStorage.setItem("page", 0)
 
   const localedTheme =  useMemo(() => createTheme(theme,locales[languageAlter()]), [theme,languageAlter()])
 

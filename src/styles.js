@@ -11,6 +11,11 @@ export const theme = createTheme(
         fontStyle: 'italic',
         //color: '#007c86',
       },
+      body2: {
+        fontStyle: 'italic',
+        color: '#007c86',
+        fontSize: 16,
+      },
       subtitle1: {
         fontStyle: 'italic',
         fontWeight: 'bold',
@@ -24,11 +29,12 @@ export const theme = createTheme(
         dark: '#007c86',
       },
       secondary: {
-        main: '#55eb98'
+        main: '#19ce76'
       },
     },
     breakpoints: {
       values: {
+        xsPhone: 350,
         tablet: 640,
         laptop: 1004,
         desktop: 1200,

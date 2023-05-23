@@ -17,11 +17,10 @@ const StationDetail = () => {
   const navigate = useNavigate()
   const small = useMediaQuery(theme.breakpoints.down("laptop"))
   const { station } = useSelector(state => state.stations)
-  const [alignment, setAlignment] = useState('')
   const [map, setMap] = useState(null)
   const [marker, setMarker] = useState(null)
   const id = location.pathname.split('/')[2]
-  const [selectedMonth, setSelectedMonth] = useState(null)
+  const [selectedMonth, setSelectedMonth] = useState("")
   const [center, setCenter] = useState(station.y ?[station.y, station.x] : [60.168916, 24.936007])
 
   const DefaultIcon = L.icon({
@@ -41,13 +40,13 @@ const StationDetail = () => {
   }, [station])
 
   const handleAlignment = (event, newAlignment) => {
-    setAlignment(newAlignment)
-    if (newAlignment !== '') setSelectedMonth(newAlignment)
-    else setSelectedMonth(null)
+    if (newAlignment === '') setSelectedMonth("") 
+    else if (newAlignment !== null) setSelectedMonth(newAlignment)
   }
 
   const stationList = (listOfStations) => {
-    return listOfStations.map(list => <Typography key={list}>{list}</Typography>)
+    if(listOfStations)
+      return listOfStations.map(list => <Typography key={list}>{list}</Typography>)
   }
 
   const mapCenter = () => {
@@ -82,12 +81,15 @@ const StationDetail = () => {
       </ReturnButton>
       <ToggleButtonGroup 
         variant="outlined"
-        value={alignment}
+        value={selectedMonth}
         exclusive
         onChange={handleAlignment}
         size="small"
         color="secondary"
-        sx={{'& .MuiToggleButton-root': { borderColor: 'rgb(111, 201, 207)'}, marginTop: '15px'}}
+        sx={{
+          '& .MuiToggleButton-root': { borderColor: 'rgb(111, 201, 207)'},
+          marginTop: '15px',
+        }}
       >
         <ToggleButton value="">{strings.all}</ToggleButton >
         <ToggleButton value="5">{strings.may}</ToggleButton >
