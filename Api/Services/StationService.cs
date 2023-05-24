@@ -64,8 +64,8 @@ namespace Api.Services
             JourneyInfoDto journeyInfo = new JourneyInfoDto();
             List<string> popularReturns = null;
             List<string> popularDepartures = null;
-            double? averageDistanseDepartures = 0;
-            double? averageDistanseReturns = 0;
+            double? AverageDistanceDepartures = 0;
+            double? AverageDistanceReturns = 0;
             int countOfDepartures = 0;
             int countOfReturns = 0;
 
@@ -74,24 +74,24 @@ namespace Api.Services
                 case 5:
                     popularReturns = (await _dBContext.Mays.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
                     popularDepartures = (await _dBContext.Mays.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    averageDistanseDepartures = await _dBContext.Mays.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    averageDistanseReturns = await _dBContext.Mays.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
+                    AverageDistanceDepartures = await _dBContext.Mays.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
+                    AverageDistanceReturns = await _dBContext.Mays.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
                     countOfDepartures = await _dBContext.Mays.Where(j => j.Departure_station_id == id).CountAsync();
                     countOfReturns = await _dBContext.Mays.Where(j => j.Return_station_id == id).CountAsync();
                     break;
                 case 6:
                     popularReturns = (await _dBContext.Junes.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
                     popularDepartures = (await _dBContext.Junes.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    averageDistanseDepartures = await _dBContext.Junes.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    averageDistanseReturns = await _dBContext.Junes.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
+                    AverageDistanceDepartures = await _dBContext.Junes.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
+                    AverageDistanceReturns = await _dBContext.Junes.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
                     countOfDepartures = await _dBContext.Junes.Where(j => j.Departure_station_id == id).CountAsync();
                     countOfReturns = await _dBContext.Junes.Where(j => j.Return_station_id == id).CountAsync();
                     break;
                 case 7:
                     popularReturns = (await _dBContext.Julys.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
                     popularDepartures = (await _dBContext.Julys.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    averageDistanseDepartures = await _dBContext.Julys.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    averageDistanseReturns = await _dBContext.Julys.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
+                    AverageDistanceDepartures = await _dBContext.Julys.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
+                    AverageDistanceReturns = await _dBContext.Julys.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
                     countOfDepartures = await _dBContext.Julys.Where(j => j.Departure_station_id == id).CountAsync();
                     countOfReturns = await _dBContext.Julys.Where(j => j.Return_station_id == id).CountAsync();
                     break;
@@ -114,11 +114,11 @@ namespace Api.Services
                         popularDepartures = popularDeparturesAnswer.OrderByDescending(j => j.count).Select(j => j.name).ToList();
                     }
 
-                    averageDistanseDepartures = (await _dBContext.Julys.Where(j => j.Departure_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
+                    AverageDistanceDepartures = (await _dBContext.Julys.Where(j => j.Departure_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
                         .Concat(await _dBContext.Junes.Where(j => j.Departure_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
                         .Concat(await _dBContext.Mays.Where(j => j.Departure_station_id == id).Select(j => j.Covered_distance_m).ToListAsync()).ToList().Average();
 
-                    averageDistanseReturns = (await _dBContext.Julys.Where(j => j.Return_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
+                    AverageDistanceReturns = (await _dBContext.Julys.Where(j => j.Return_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
                         .Concat(await _dBContext.Junes.Where(j => j.Return_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
                         .Concat(await _dBContext.Mays.Where(j => j.Return_station_id == id).Select(j => j.Covered_distance_m).ToListAsync()).ToList().Average();
 
@@ -135,12 +135,12 @@ namespace Api.Services
             if (countOfDepartures != 0)
             {
                 journeyInfo.PopularReturns = popularReturns;
-                journeyInfo.AverageDistanseDepartures = Math.Round((decimal)(averageDistanseDepartures / 1000), 2);
+                journeyInfo.AverageDistanceDepartures = Math.Round((decimal)(AverageDistanceDepartures / 1000), 2);
             }
             if (countOfReturns != 0)
             {
                 journeyInfo.PopularDepartures = popularDepartures;
-                journeyInfo.AverageDistanseReturns = Math.Round((decimal)(averageDistanseReturns / 1000), 2);
+                journeyInfo.AverageDistanceReturns = Math.Round((decimal)(AverageDistanceReturns / 1000), 2);
             }
             journeyInfo.CountOfDepartures = countOfDepartures;
             journeyInfo.CountOfReturns = countOfReturns;

@@ -213,8 +213,8 @@ namespace Unit_Tests
             Assert.Equal("Tredje gatan 3", answer.Adress);
             Assert.Equal(60.2504077926351, answer.y);
             Assert.Equal(24.2286486878388, answer.x);
-            Assert.Equal((decimal)3.2, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)1.23, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)3.2, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)1.23, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(1, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(1, answer.journeyInfo.CountOfReturns);
             Assert.Equal("Kuudes", answer.journeyInfo.PopularDepartures[0]);
@@ -249,8 +249,8 @@ namespace Unit_Tests
             Assert.Equal("Andra gatan 2", answer.Adress);
             Assert.Equal(60.3504077926351, answer.y);
             Assert.Equal(24.2386486878388, answer.x);
-            Assert.Equal((decimal)10, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)7, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)10, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)7, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(1, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(2, answer.journeyInfo.CountOfReturns);
             Assert.Equal("Toinen", answer.journeyInfo.PopularDepartures[0]);
@@ -286,8 +286,8 @@ namespace Unit_Tests
             Assert.Equal("Fosta gatan 1", answer.Adress);
             Assert.Equal(60.2504081726074, answer.y);
             Assert.Equal(24.2486486878388, answer.x);
-            Assert.Equal((decimal)7.78, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)6.49, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)7.78, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)6.49, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(3, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(4, answer.journeyInfo.CountOfReturns);
 
@@ -329,8 +329,8 @@ namespace Unit_Tests
             Assert.Equal("Nionde gatan 9", answer.Adress);
             Assert.Equal(60.7504077926351, answer.y);
             Assert.Equal(24.7986486878388, answer.x);
-            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(0, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(0, answer.journeyInfo.CountOfReturns);
         }
@@ -363,8 +363,8 @@ namespace Unit_Tests
             Assert.Equal("Sjunde gatan 7", answer.Adress);
             Assert.Equal(60.5504077926351, answer.y);
             Assert.Equal(24.7486486878388, answer.x);
-            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)16, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)16, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(0, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(1, answer.journeyInfo.CountOfReturns);
             Assert.Equal("Ensimmainen", answer.journeyInfo.PopularDepartures[0]);
@@ -398,8 +398,8 @@ namespace Unit_Tests
             Assert.Equal("Fjarde gatan 4", answer.Adress);
             Assert.Equal(60.2504077926351, answer.y);
             Assert.Equal(24.3486486878388, answer.x);
-            Assert.Equal((decimal)3, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)3, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)0, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(1, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(0, answer.journeyInfo.CountOfReturns);
             Assert.Equal("Toinen", answer.journeyInfo.PopularReturns[0]);
@@ -457,8 +457,8 @@ namespace Unit_Tests
             Assert.Equal("Andra gatan 2", answer.Adress);
             Assert.Equal(60.350407792635103, answer.y);
             Assert.Equal(24.238648687838801, answer.x);
-            Assert.Equal((decimal)10, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)5.24, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)10, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)5.24, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(1, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(7, answer.journeyInfo.CountOfReturns);
 
@@ -499,8 +499,8 @@ namespace Unit_Tests
             Assert.Equal("Andra gatan 2", answer.Adress);
             Assert.Equal(60.3504077926351, answer.y);
             Assert.Equal(24.2386486878388, answer.x);
-            Assert.Equal((decimal)10, answer.journeyInfo.AverageDistanseDepartures);
-            Assert.Equal((decimal)5.24, answer.journeyInfo.AverageDistanseReturns);
+            Assert.Equal((decimal)10, answer.journeyInfo.AverageDistanceDepartures);
+            Assert.Equal((decimal)5.24, answer.journeyInfo.AverageDistanceReturns);
             Assert.Equal(1, answer.journeyInfo.CountOfDepartures);
             Assert.Equal(7, answer.journeyInfo.CountOfReturns);
 
