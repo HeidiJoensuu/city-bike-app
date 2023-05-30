@@ -6,11 +6,11 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /city-bike-app
-COPY ["city-bike-app/Api/Api.csproj", "Api/"]
+WORKDIR /Api
+COPY ["Api/Api.csproj", "Api/"]
 RUN dotnet restore "Api/Api.csproj"
 COPY . .
-WORKDIR "./city-bike-app/Api"
+WORKDIR ".Api"
 RUN dotnet build "Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
