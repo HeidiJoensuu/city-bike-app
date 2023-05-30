@@ -1,0 +1,70 @@
+body {
+  margin: 0px;
+}
+a {
+  text-decoration: none;
+}
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ReactFlagsSelect-module_selectBtn__19wW7 {
+  border: 0px
+}
+.ReactFlagsSelect-module_flagsSelectInline__cUnnz{
+  position: absolute;
+  right: 26px;
+  top: 26px;
+}
+
+.ReactFlagsSelect-module_selectValue__152eS {
+  padding: 0px;
+}
+.navUl li a{
+  all: unset;
+}
+.processPaper{
+  position: fixed;
+  z-index: 5;
+  left: 20px;
+  bottom: 20px;
+}
+
+.searchInput{
+width: 600px;
+}
+.navButton{
+  font-size: 30px;
+  color: unset;
+}
+.css-1kc97d-MuiButtonBase-root-MuiToggleButton-root{
+  color: #000;
+}
+.map {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  top: 0;
+  bottom: 0;
+  position: relative;
+}
+
+@media only screen and (max-width:1004px) {
+  .navButton{ 
+    font-size: 20px;
+  }
+}
+
+@media only screen and (max-width:600px) {
+  .ReactFlagsSelect-module_flagsSelectInline__cUnnz{
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+  .searchInput{
+    width: 100%;
+  }
+}
+
