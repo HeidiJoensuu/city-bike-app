@@ -4,7 +4,7 @@ services:
     restart: always
     build:
       context: .
-      dockerfile: /api/Dockerfile
+      dockerfile: /Api/Dockerfile
     depends_on:
         - db
     ports: 
