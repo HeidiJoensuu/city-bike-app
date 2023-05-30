@@ -56,3 +56,8 @@ export const getNumberOfStations = async (data) => {
   const response = await axios.get(url)
   return response.data
 }
+
+export const getStationsNames = async () => {
+  const response = await axios.get(`${config.url}Station/names`)
+  return response.data
+}

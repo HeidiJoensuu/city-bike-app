@@ -29,19 +29,25 @@ const StationDetail = () => {
     iconAnchor: [8,40],
   })
 
-  L.Marker.prototype.options.icon = DefaultIcon;
-
+  L.Marker.prototype.options.icon = DefaultIcon
+/*
   useEffect(() => {
     dispatch(getIndividualStationInfo({id: id, month: selectedMonth}))
   }, [selectedMonth])
-
+*/
   useEffect(() =>{
     mapCenter()
   }, [station])
 
   const handleAlignment = (event, newAlignment) => {
-    if (newAlignment === '') setSelectedMonth("") 
-    else if (newAlignment !== null) setSelectedMonth(newAlignment)
+    if (newAlignment === '') {
+      setSelectedMonth("")
+      dispatch(getIndividualStationInfo({id: id, month: ""}))
+    }
+    else if (newAlignment !== null) {
+      setSelectedMonth(newAlignment)
+      dispatch(getIndividualStationInfo({id: id, month: newAlignment}))
+    }
   }
 
   const stationList = (listOfStations) => {

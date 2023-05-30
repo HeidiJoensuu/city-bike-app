@@ -21,6 +21,13 @@ export const theme = createTheme(
         fontWeight: 'bold',
         fontSize: 16,
         color: '#007c86',
+      },
+      h2: {
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        color: '#007c86',
+        fontSize:26,
+        margin: "10px"
       }
     },
     palette: {
@@ -67,4 +74,12 @@ export const ReturnButton = styled(Button)({
 
 export const ListGrid = styled(Grid)({
   marginBottom:"20px"
+})
+
+export const AdminButton = styled(Button)({
+  position: "absolute",
+  right: "26px",
+  top: "75px",
+  textTransform: "capitalize",
+  fontStyle: 'italic',
 })

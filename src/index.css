@@ -22,9 +22,8 @@ a {
 .ReactFlagsSelect-module_selectValue__152eS {
   padding: 0px;
 }
-
 .navUl li a{
-  all: unset
+  all: unset;
 }
 .processPaper{
   position: fixed;
@@ -51,6 +50,7 @@ width: 600px;
   bottom: 0;
   position: relative;
 }
+
 @media only screen and (max-width:1004px) {
   .navButton{ 
     font-size: 20px;

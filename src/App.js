@@ -11,6 +11,7 @@ import LoadingScreen from "./components/LoadingScreen"
 import { ThemeProvider, createTheme } from "@mui/material"
 import { theme } from "./styles"
 import * as locales from '@mui/material/locale'
+import Settings from "./components/pages/Settings"
 
 
 /**
@@ -71,6 +72,7 @@ const App = () => {
             <Route path="/journeys" element={<JourneysList />} />
             <Route path="/stations/:id" element={<StationDetail />} />
             <Route path="/stations" element={<StationsList />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </div>
       </BrowserRouter>

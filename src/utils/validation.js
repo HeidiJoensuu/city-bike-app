@@ -3,6 +3,7 @@ import dayjs from "dayjs"
 
 export const validateIsItNumber = (value) => {
   try {
+    if (value === "") return ""
     if (typeof value !== "number")
       if (!Number.isFinite(Number(value.replace(",", "."))) || Number(value.replace(",", "."))<0) return strings.errors.invalidInput
     return ""

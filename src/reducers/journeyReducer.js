@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { getJourneys, getJourneysCounted, postJourney } from "../services/JourneysService"
+import { strings } from "../utils/localization"
 
 export const getJourneysAsList = createAsyncThunk("journeys/getJourneysAsList", async (data) =>{
   const response = await getJourneys(data)
@@ -7,6 +8,7 @@ export const getJourneysAsList = createAsyncThunk("journeys/getJourneysAsList", 
 })
 
 export const createJourney = createAsyncThunk("journeys/createJourney", async (data) => {
+
   const response = await postJourney(data)
   return response
 })
@@ -21,10 +23,18 @@ export const journeysSlice = createSlice({
   initialState: {
     journeysCount: 0,
     journeyList: [],
-    error: null,
+    errorJ: {
+      target: null,
+      message: {}
+    },
     loadingJourneysJourneys: false
   },
-  reducers: {},
+  reducers: {
+    dismissJourneyError: (state) => {
+      state.errorJ.target = null
+      state.errorJ.message = {}
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(getJourneysAsList.fulfilled, (state, action) => {
       if (state.loadingJourneys) state.loadingJourneys = false
@@ -32,7 +42,8 @@ export const journeysSlice = createSlice({
     }),
     builder.addCase(createJourney.fulfilled, (state, action) => {
       if (state.loadingJourneys) state.loadingJourneys = false
-      state.journeyList = [...state.journeyList, action.payload]
+      state.errorJ.target = `success`
+      state.errorJ.message = strings.success
     }),
     builder.addCase(getJourneysCount.fulfilled, (state, action) => {
       state.journeysCount = action.payload
@@ -42,17 +53,20 @@ export const journeysSlice = createSlice({
     }),
     builder.addCase(getJourneysAsList.rejected, (state, action) => {
       if (state.loadingJourneys) state.loadingJourneys = false
-      state.error = `getJourneysAsList: ${action.error.message}` 
+      state.errorJ.target = `getJourneysAsList` 
+      state.errorJ.message = action.error
     }),
     builder.addCase(createJourney.rejected, (state, action) => {
       if (state.loadingJourneys) state.loadingJourneys = false
-      state.error = `createJourney: ${action.error.message}`
+      state.errorJ.target = `createJourney` 
+      state.errorJ.message = action.error
     }),
     builder.addCase(getJourneysCount.rejected, (state, action) => {
-      state.error = `getJourneysCount: ${action.error.message}`
+      state.errorJ.target = `getJourneysCount` 
+      state.errorJ.message = action.error
     })
   }
 })
 
-export const {} = journeysSlice.actions
+export const {dismissJourneyError} = journeysSlice.actions
 export default journeysSlice.reducer

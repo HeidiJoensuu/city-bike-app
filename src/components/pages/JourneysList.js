@@ -16,7 +16,7 @@ const JourneysList = () => {
   })
   const [filterData, setFilterData] = useState(JSON.parse(sessionStorage.getItem("filter")) || {
     departure: "",
-    return: "",
+    returntime: "",
     distanceMin: "",
     distanceMax: "",
     durationMin: "",
@@ -25,7 +25,7 @@ const JourneysList = () => {
 
   const orderNames = {
     Departure: "Departure",
-    Return: "Return",
+    returntime: "Returntime",
     Departure_station_name: "Departure_station_name",
     Return_station_name: "Return_station_name",
     Covered_distance: "Covered_distance",

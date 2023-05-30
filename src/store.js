@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import storage from 'redux-persist/lib/storage'
+import storageSession from 'redux-persist/lib/storage/session'
 import persistReducer from "redux-persist/es/persistReducer"
 import stationReducer from "./reducers/stationReducer"
 import journeyReducer from "./reducers/journeyReducer"
@@ -11,7 +12,7 @@ const reducers = combineReducers({
 
 const persistConfig = {
   key: 'root',
-  storage
+  storage: storageSession
 }
 
 const persistedReducer = persistReducer(persistConfig, reducers)

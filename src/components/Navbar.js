@@ -1,9 +1,9 @@
 import { Button, ButtonGroup, Grid, useMediaQuery } from "@mui/material"
 import imageCycle from "../assets/imageCycle.png"
 import imageTitle from "../assets/imageTitle.png"
-import { theme } from "../styles"
+import { AdminButton, theme } from "../styles"
 import { useState } from "react"
-import { NavLink, redirect } from "react-router-dom"
+import { NavLink, redirect, useNavigate } from "react-router-dom"
 import ReactFlagsSelect from "react-flags-select"
 import { strings } from "../utils/localization"
 import { Height } from "@mui/icons-material"
@@ -14,6 +14,7 @@ import { Height } from "@mui/icons-material"
  */
 const Navbar = ({ language, changeLanguageHandler }) => {
   const small = useMediaQuery(theme.breakpoints.down("laptop"))
+  const navigate = useNavigate()
 
   const checkCurrentPage = () => {
     return location.pathname.split('/')[1]
@@ -31,6 +32,8 @@ const Navbar = ({ language, changeLanguageHandler }) => {
         optionsSize={25}
         fullWidth={false}
       />
+      <AdminButton onClick={() => navigate("/settings")}>Admin settings</AdminButton>
+      {checkCurrentPage() !== "settings" &&
       <Grid
         container
         sx = {{
@@ -50,6 +53,7 @@ const Navbar = ({ language, changeLanguageHandler }) => {
         
         <Grid item></Grid>
       </Grid>
+      }
       <Grid sx={{marginBottom: "25px"}}>
         <ButtonGroup variant="text" size="large">
           <Button
