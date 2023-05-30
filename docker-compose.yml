@@ -4,7 +4,7 @@ services:
     restart: always
     build:
       context: .
-      dockerfile: /Api/Dockerfile
+      dockerfile: \Api\Dockerfile
     depends_on:
         - db
     ports: 
@@ -20,9 +20,9 @@ services:
     command: sh -c "npm install && npm start"
     ports: 
       - 3000:3000
-    working_dir: /client
+    working_dir: \client
     volumes: 
-      - ./client:/client
+      - .\client:\client
     environment:
       CHOKIDAR_USEPOLLING: "true"
 
@@ -30,12 +30,12 @@ services:
     image: postgres:15.3-alpine3.18
     restart: always
     volumes:
-      - citybike-postgres-data:/var/lib/postgres
-      - ./databaseFiles/2021-05.csv:/csv/2021-05.csv
-      - ./databaseFiles/2021-06.csv:/csv/2021-06.csv
-      - ./databaseFiles/2021-07.csv:/csv/2021-07.csv
-      - ./databaseFiles/Helsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv:/csv/pyoraAsemat.csv
-      - ./createTables.sql:/docker-entrypoint-initdb.d/createTables.sql
+      - citybike-postgres-data:\var\lib\postgres
+      - .\databaseFiles\2021-05.csv:\csv\2021-05.csv
+      - .\databaseFiles\2021-06.csv:\csv\2021-06.csv
+      - .\databaseFiles\2021-07.csv:\csv\2021-07.csv
+      - .\databaseFiles\Helsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv:\csv\pyoraAsemat.csv
+      - .\createTables.sql:\docker-entrypoint-initdb.d\createTables.sql
     environment: 
       POSTGRES_PASSWORD: secret
       POSTGRES_USER: root
