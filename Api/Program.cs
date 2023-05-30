@@ -17,8 +17,8 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<CityBikesDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Db")));
-
+builder.Services.AddDbContext<CityBikesDBContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Db")));
+Console.WriteLine(builder.Configuration.GetConnectionString("Db"));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -28,6 +28,8 @@ builder.Services.AddScoped<IStationService, StationService>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

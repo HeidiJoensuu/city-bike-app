@@ -38,11 +38,6 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StationInfoDTO>> GetStationInfo(int id, int month)
         {
-            Console.WriteLine(month);
-            if (month == null)
-            {
-                month = 0;
-            }
             try
             {
                 return Ok(_mapper.Map<StationInfoDTO>(await _stationService.GetStationInfo(id, month)));
@@ -53,13 +48,13 @@ namespace Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult<Station>> PostStation(NewStationDto dto)
+        public async Task<ActionResult<StationShortDto>> PostStation(NewStationDto dto)
         {
             try
             {
                 var saveStation = _mapper.Map<Station>(dto);
-                var station = _mapper.Map<StationDto>(await _stationService.CreateStation(saveStation));
-                return CreatedAtAction(nameof(GetStations), new { id = station.Id }, station);
+                var station = _mapper.Map<StationShortDto>(await _stationService.CreateStation(saveStation));
+                return CreatedAtAction(nameof(GetStationNames), new { id = station.Id }, station);
             } 
             catch (Exception ex)
             {
@@ -76,6 +71,19 @@ namespace Api.Controllers
             try
             {
                 return Ok(await _stationService.GetStationCount(search));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+        [HttpGet("names")]
+        public async Task<ActionResult<StationShortDto>> GetStationNames()
+        {
+            try
+            {
+                return Ok(await _stationService.GetStationNames());
             }
             catch (Exception ex)
             {

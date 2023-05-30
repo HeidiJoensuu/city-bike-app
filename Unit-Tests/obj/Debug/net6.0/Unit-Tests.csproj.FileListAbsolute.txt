@@ -367,3 +367,5 @@ C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Unit-Tests\bi
 C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Unit-Tests\bin\Debug\net6.0\MockQueryable.Core.dll
 C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Unit-Tests\bin\Debug\net6.0\MockQueryable.EntityFrameworkCore.dll
 C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Unit-Tests\bin\Debug\net6.0\MockQueryable.Moq.dll
+C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Unit-Tests\bin\Debug\net6.0\Npgsql.dll
+C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Unit-Tests\bin\Debug\net6.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

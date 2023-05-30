@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bBXO+bZCAUPlGP/guPtNr+IZKOzB+tTaSqOlEZsMihf+Fnf/AhJHLZHcx/ron6o0LvADEwizC/dE8okdv3EXyQ==",
+  "dgSpecHash": "nruuOeApQCStz1El6EsWpC5Q6R9B1LxRGVxlXpH2uUDa0v9axRiu6QJ6IXhuI+QNaXa4geCIo8ukhs3qsg8Fvw==",
   "success": true,
   "projectFilePath": "C:\\Users\\Heidi\\Documents\\Koodausta\\tyonhaku\\cityCike\\city-bike-app\\Unit-Tests\\Unit-Tests.csproj",
   "expectedPackageFiles": [
@@ -113,6 +113,8 @@
     "C:\\Users\\Heidi\\.nuget\\packages\\moq.entityframeworkcore\\7.0.0.2\\moq.entityframeworkcore.7.0.0.2.nupkg.sha512",
     "C:\\Users\\Heidi\\.nuget\\packages\\netstandard.library\\1.6.1\\netstandard.library.1.6.1.nupkg.sha512",
     "C:\\Users\\Heidi\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\Heidi\\.nuget\\packages\\npgsql\\7.0.4\\npgsql.7.0.4.nupkg.sha512",
+    "C:\\Users\\Heidi\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\7.0.4\\npgsql.entityframeworkcore.postgresql.7.0.4.nupkg.sha512",
     "C:\\Users\\Heidi\\.nuget\\packages\\nuget.common\\6.3.1\\nuget.common.6.3.1.nupkg.sha512",
     "C:\\Users\\Heidi\\.nuget\\packages\\nuget.configuration\\6.3.1\\nuget.configuration.6.3.1.nupkg.sha512",
     "C:\\Users\\Heidi\\.nuget\\packages\\nuget.dependencyresolver.core\\6.3.1\\nuget.dependencyresolver.core.6.3.1.nupkg.sha512",

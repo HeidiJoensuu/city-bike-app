@@ -580,3 +580,5 @@ C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Api\obj\Debug
 C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Api\obj\Debug\net6.0\Api.pdb
 C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Api\obj\Debug\net6.0\Api.genruntimeconfig.cache
 C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Api\obj\Debug\net6.0\ref\Api.dll
+C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Api\bin\Debug\net6.0\Npgsql.dll
+C:\Users\Heidi\Documents\Koodausta\tyonhaku\cityCike\city-bike-app\Api\bin\Debug\net6.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

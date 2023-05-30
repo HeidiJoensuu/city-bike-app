@@ -26,31 +26,31 @@ namespace Api.Services
             foreach (PropertyInfo prop in saveStation.GetType().GetProperties())
             {
                 Console.WriteLine($"{prop.Name}: {prop.GetValue(saveStation, null)}");
-                if (prop.Name.ToString() != "Id" && prop.Name.ToString() != "may" && prop.Name.ToString() != "june" && prop.Name.ToString() != "july")
+                if (prop.Name.ToString() != "id" && prop.Name.ToString() != "may" && prop.Name.ToString() != "june" && prop.Name.ToString() != "july" && prop.Name.ToString() != "kaupunki")
                 {
-                    if (prop.GetValue(saveStation, null) is (object?)"" or (object?)0 or null or (object?)"0")
+                    if (prop.GetValue(saveStation, null).ToString() is "" or null or "0")
                     {
                         throw new MissingInputsException(prop.Name.ToString());
                     }
                 }
             }
-            var dublicate = _dBContext.Stations.Select(station => new { nimi = station.Nimi, namn = station.Namn, name = station.Name })
-                .Where(station => station.name == saveStation.Name || station.namn == saveStation.Namn || station.nimi == saveStation.Nimi).FirstOrDefault();
-            if (await _dBContext.Stations.AnyAsync(station => station.Nimi == saveStation.Nimi))
+            var dublicate = _dBContext.Stations.Select(station => new { nimi = station.nimi, namn = station.namn, name = station.name })
+                .Where(station => station.name == saveStation.name || station.namn == saveStation.namn || station.nimi == saveStation.nimi).FirstOrDefault();
+            if (await _dBContext.Stations.AnyAsync(station => station.nimi == saveStation.nimi))
             {
-                throw new DuplicateException("Nimi", saveStation.Nimi);
+                throw new DuplicateException("Nimi", saveStation.nimi);
             }
-            if (await _dBContext.Stations.AnyAsync(station => station.Namn == saveStation.Namn))
+            if (await _dBContext.Stations.AnyAsync(station => station.namn == saveStation.namn))
             {
-                throw new DuplicateException("Nimi", saveStation.Nimi);
+                throw new DuplicateException("Nimi", saveStation.nimi);
             }
-            if (await _dBContext.Stations.AnyAsync(station => station.Name == saveStation.Name))
+            if (await _dBContext.Stations.AnyAsync(station => station.name == saveStation.name))
             {
-                throw new DuplicateException("Nimi", saveStation.Nimi);
+                throw new DuplicateException("Nimi", saveStation.nimi);
             }
 
-            var id = await _dBContext.Stations.MaxAsync(s => s.Id); //Because FID in Database is the primarykey and therefore auto incremented and Id is not
-            saveStation.Id = id+1;
+            var id = await _dBContext.Stations.MaxAsync(s => s.id); //Because FID in Database is the primarykey and therefore auto incremented and Id is not
+            saveStation.id = id+1;
 
             await _dBContext.Stations.AddAsync(saveStation);
             await _dBContext.SaveChangesAsync();
@@ -72,63 +72,63 @@ namespace Api.Services
             switch (month)
             {
                 case 5:
-                    popularReturns = (await _dBContext.Mays.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    popularDepartures = (await _dBContext.Mays.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    AverageDistanceDepartures = await _dBContext.Mays.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    AverageDistanceReturns = await _dBContext.Mays.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    countOfDepartures = await _dBContext.Mays.Where(j => j.Departure_station_id == id).CountAsync();
-                    countOfReturns = await _dBContext.Mays.Where(j => j.Return_station_id == id).CountAsync();
+                    popularReturns = (await _dBContext.Mays.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
+                    popularDepartures = (await _dBContext.Mays.Where(j => j.return_station_id == id).Select(j => j.departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
+                    AverageDistanceDepartures = await _dBContext.Mays.Where(j => j.departure_station_id == id).AverageAsync(x => x.covered_distance_m);
+                    AverageDistanceReturns = await _dBContext.Mays.Where(j => j.return_station_id == id).AverageAsync(x => x.covered_distance_m);
+                    countOfDepartures = await _dBContext.Mays.Where(j => j.departure_station_id == id).CountAsync();
+                    countOfReturns = await _dBContext.Mays.Where(j => j.return_station_id == id).CountAsync();
                     break;
                 case 6:
-                    popularReturns = (await _dBContext.Junes.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    popularDepartures = (await _dBContext.Junes.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    AverageDistanceDepartures = await _dBContext.Junes.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    AverageDistanceReturns = await _dBContext.Junes.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    countOfDepartures = await _dBContext.Junes.Where(j => j.Departure_station_id == id).CountAsync();
-                    countOfReturns = await _dBContext.Junes.Where(j => j.Return_station_id == id).CountAsync();
+                    popularReturns = (await _dBContext.Junes.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
+                    popularDepartures = (await _dBContext.Junes.Where(j => j.return_station_id == id).Select(j => j.departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
+                    AverageDistanceDepartures = await _dBContext.Junes.Where(j => j.departure_station_id == id).AverageAsync(x => x.covered_distance_m);
+                    AverageDistanceReturns = await _dBContext.Junes.Where(j => j.return_station_id == id).AverageAsync(x => x.covered_distance_m);
+                    countOfDepartures = await _dBContext.Junes.Where(j => j.departure_station_id == id).CountAsync();
+                    countOfReturns = await _dBContext.Junes.Where(j => j.return_station_id == id).CountAsync();
                     break;
                 case 7:
-                    popularReturns = (await _dBContext.Julys.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    popularDepartures = (await _dBContext.Julys.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
-                    AverageDistanceDepartures = await _dBContext.Julys.Where(j => j.Departure_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    AverageDistanceReturns = await _dBContext.Julys.Where(j => j.Return_station_id == id).AverageAsync(x => x.Covered_distance_m);
-                    countOfDepartures = await _dBContext.Julys.Where(j => j.Departure_station_id == id).CountAsync();
-                    countOfReturns = await _dBContext.Julys.Where(j => j.Return_station_id == id).CountAsync();
+                    popularReturns = (await _dBContext.Julys.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
+                    popularDepartures = (await _dBContext.Julys.Where(j => j.return_station_id == id).Select(j => j.departure_station_name).ToListAsync()).GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Select(j => j.name).Take(5).ToList();
+                    AverageDistanceDepartures = await _dBContext.Julys.Where(j => j.departure_station_id == id).AverageAsync(x => x.covered_distance_m);
+                    AverageDistanceReturns = await _dBContext.Julys.Where(j => j.return_station_id == id).AverageAsync(x => x.covered_distance_m);
+                    countOfDepartures = await _dBContext.Julys.Where(j => j.departure_station_id == id).CountAsync();
+                    countOfReturns = await _dBContext.Julys.Where(j => j.return_station_id == id).CountAsync();
                     break;
                 default:
-                    var popularReturnsAnswer = (await _dBContext.Mays.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync())
-                        .Concat(await _dBContext.Junes.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync())
-                        .Concat(await _dBContext.Julys.Where(j => j.Departure_station_id == id).Select(j => j.Return_station_name).ToListAsync())
+                    var popularReturnsAnswer = (await _dBContext.Mays.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync())
+                        .Concat(await _dBContext.Junes.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync())
+                        .Concat(await _dBContext.Julys.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync())
                         .GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Take(5).ToList();
                     if (popularReturnsAnswer != null)
                     {
                         popularReturns= popularReturnsAnswer.OrderByDescending(j => j.count).Select(j => j.name).ToList();
                     }
 
-                    var popularDeparturesAnswer = (await _dBContext.Mays.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync())
-                        .Concat(await _dBContext.Junes.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync())
-                        .Concat(await _dBContext.Julys.Where(j => j.Return_station_id == id).Select(j => j.Departure_station_name).ToListAsync())
+                    var popularDeparturesAnswer = (await _dBContext.Mays.Where(j => j.return_station_id == id).Select(j => j.departure_station_name).ToListAsync())
+                        .Concat(await _dBContext.Junes.Where(j => j.return_station_id == id).Select(j => j.departure_station_name).ToListAsync())
+                        .Concat(await _dBContext.Julys.Where(j => j.return_station_id == id).Select(j => j.departure_station_name).ToListAsync())
                         .GroupBy(g => g).Select(g => new { count = g.Count(), name = g.Key }).ToList().OrderByDescending(j => j.count).Take(5).ToList();
                     if (popularDeparturesAnswer != null)
                     {
                         popularDepartures = popularDeparturesAnswer.OrderByDescending(j => j.count).Select(j => j.name).ToList();
                     }
 
-                    AverageDistanceDepartures = (await _dBContext.Julys.Where(j => j.Departure_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
-                        .Concat(await _dBContext.Junes.Where(j => j.Departure_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
-                        .Concat(await _dBContext.Mays.Where(j => j.Departure_station_id == id).Select(j => j.Covered_distance_m).ToListAsync()).ToList().Average();
+                    AverageDistanceDepartures = (await _dBContext.Julys.Where(j => j.departure_station_id == id).Select(j => j.covered_distance_m).ToListAsync())
+                        .Concat(await _dBContext.Junes.Where(j => j.departure_station_id == id).Select(j => j.covered_distance_m).ToListAsync())
+                        .Concat(await _dBContext.Mays.Where(j => j.departure_station_id == id).Select(j => j.covered_distance_m).ToListAsync()).ToList().Average();
 
-                    AverageDistanceReturns = (await _dBContext.Julys.Where(j => j.Return_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
-                        .Concat(await _dBContext.Junes.Where(j => j.Return_station_id == id).Select(j => j.Covered_distance_m).ToListAsync())
-                        .Concat(await _dBContext.Mays.Where(j => j.Return_station_id == id).Select(j => j.Covered_distance_m).ToListAsync()).ToList().Average();
+                    AverageDistanceReturns = (await _dBContext.Julys.Where(j => j.return_station_id == id).Select(j => j.covered_distance_m).ToListAsync())
+                        .Concat(await _dBContext.Junes.Where(j => j.return_station_id == id).Select(j => j.covered_distance_m).ToListAsync())
+                        .Concat(await _dBContext.Mays.Where(j => j.return_station_id == id).Select(j => j.covered_distance_m).ToListAsync()).ToList().Average();
 
-                    countOfDepartures = await _dBContext.Julys.Where(j => j.Departure_station_id == id).CountAsync()
-                         + await _dBContext.Junes.Where(j => j.Departure_station_id == id).CountAsync()
-                         + await _dBContext.Mays.Where(j => j.Departure_station_id == id).CountAsync();
+                    countOfDepartures = await _dBContext.Julys.Where(j => j.departure_station_id == id).CountAsync()
+                         + await _dBContext.Junes.Where(j => j.departure_station_id == id).CountAsync()
+                         + await _dBContext.Mays.Where(j => j.departure_station_id == id).CountAsync();
 
-                    countOfReturns = await _dBContext.Julys.Where(j => j.Return_station_id == id).CountAsync()
-                         + await _dBContext.Junes.Where(j => j.Return_station_id == id).CountAsync()
-                         + await _dBContext.Mays.Where(j => j.Return_station_id == id).CountAsync();
+                    countOfReturns = await _dBContext.Julys.Where(j => j.return_station_id == id).CountAsync()
+                         + await _dBContext.Junes.Where(j => j.return_station_id == id).CountAsync()
+                         + await _dBContext.Mays.Where(j => j.return_station_id == id).CountAsync();
                     break;
             }
 
@@ -145,15 +145,15 @@ namespace Api.Services
             journeyInfo.CountOfDepartures = countOfDepartures;
             journeyInfo.CountOfReturns = countOfReturns;
 
-            return await _dBContext.Stations.Where( s => s.Id == id).Select(s => new StationInfoDTO
+            return await _dBContext.Stations.Where( s => s.id == id).Select(s => new StationInfoDTO
                 {
-                    Adress = s.Adress,
-                    Name = s.Name,
-                    Nimi = s.Nimi,
-                    Namn = s.Namn,
-                    Osoite = s.Osoite,
-                    x = double.Parse(s.x, CultureInfo.InvariantCulture.NumberFormat),
-                    y = double.Parse(s.y, CultureInfo.InvariantCulture.NumberFormat),
+                    Adress = s.adress,
+                    Name = s.name,
+                    Nimi = s.nimi,
+                    Namn = s.namn,
+                    Osoite = s.osoite,
+                    x = s.x,
+                    y = s.y,
                     journeyInfo = journeyInfo
                 }
             )
@@ -168,120 +168,126 @@ namespace Api.Services
                     if (descending)
                     {
                         return await _dBContext.Stations
-                            .Select(s => new Station { Id = s.Id, Nimi = s.Nimi, Namn = s.Namn, Name = s.Name, Osoite = s.Osoite, Adress = s.Osoite })
+                            .Select(s => new Station { id = s.id, nimi = s.nimi, namn = s.namn, name = s.name, osoite = s.osoite, adress = s.osoite })
                             .Where(s =>  
-                            s.Nimi.ToLower().Contains(search.ToLower()) 
-                            || s.Namn.ToLower().Contains(search.ToLower()) 
-                            || s.Name.ToLower().Contains(search.ToLower()) 
-                            || s.Osoite.ToLower().Contains(search.ToLower()) 
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderByDescending(s => s.Nimi).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower()) 
+                            || s.namn.ToLower().Contains(search.ToLower()) 
+                            || s.name.ToLower().Contains(search.ToLower()) 
+                            || s.osoite.ToLower().Contains(search.ToLower()) 
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderByDescending(s => s.nimi).Skip(offset).Take(limit).ToListAsync();
                     }
                     else
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderBy(s => s.Nimi).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderBy(s => s.nimi).Skip(offset).Take(limit).ToListAsync();
 
                     }
                 case "Namn":
                     if (descending)
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderByDescending(s => s.Namn).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderByDescending(s => s.namn).Skip(offset).Take(limit).ToListAsync();
                     }
                     else
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderBy(s => s.Namn).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderBy(s => s.namn).Skip(offset).Take(limit).ToListAsync();
                     }
                 case "Name":
                     if (descending)
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderByDescending(s => s.Name).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderByDescending(s => s.name).Skip(offset).Take(limit).ToListAsync();
                     }
                     else
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderBy(s => s.Name).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderBy(s => s.name).Skip(offset).Take(limit).ToListAsync();
                     }
                 case "Osoite":
                     if (descending)
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderByDescending(s => s.Osoite).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderByDescending(s => s.osoite).Skip(offset).Take(limit).ToListAsync();
                     }
                     else
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderBy(s => s.Osoite).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderBy(s => s.osoite).Skip(offset).Take(limit).ToListAsync();
                     }
                 default:
                     if (descending)
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderByDescending(s => s.Adress).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderByDescending(s => s.adress).Skip(offset).Take(limit).ToListAsync();
                     }
                     else
                     {
                         return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower()))
-                            .OrderBy(s => s.Adress).Skip(offset).Take(limit).ToListAsync();
+                            s.nimi.ToLower().Contains(search.ToLower())
+                            || s.namn.ToLower().Contains(search.ToLower())
+                            || s.name.ToLower().Contains(search.ToLower())
+                            || s.osoite.ToLower().Contains(search.ToLower())
+                            || s.adress.ToLower().Contains(search.ToLower()))
+                            .OrderBy(s => s.adress).Skip(offset).Take(limit).ToListAsync();
                     }
             }
         }
         public async Task<int> GetStationCount(string search)
         {
             return await _dBContext.Stations.Where(s =>
-                            s.Nimi.ToLower().Contains(search.ToLower())
-                            || s.Namn.ToLower().Contains(search.ToLower())
-                            || s.Name.ToLower().Contains(search.ToLower())
-                            || s.Osoite.ToLower().Contains(search.ToLower())
-                            || s.Adress.ToLower().Contains(search.ToLower())).CountAsync();
+                s.nimi.ToLower().Contains(search.ToLower())
+                || s.namn.ToLower().Contains(search.ToLower())
+                || s.name.ToLower().Contains(search.ToLower())
+                || s.osoite.ToLower().Contains(search.ToLower())
+                || s.adress.ToLower().Contains(search.ToLower()))
+                .CountAsync();
+        }
+
+        public async Task<IEnumerable<StationShortDto>> GetStationNames()
+        {
+            return await _dBContext.Stations.Select(station => new StationShortDto { Id = station.id, Nimi =station.nimi, Namn = station.namn, Name = station.name, Kaupunki = station.kaupunki}).ToListAsync();
         }
     }
 }

@@ -9,5 +9,6 @@ namespace Api.Services
         Task<StationInfoDTO> GetStationInfo(int id, int month);
         Task<Station> CreateStation(Station saveStationDto);
         Task<int> GetStationCount(string search);
+        Task<IEnumerable<StationShortDto>> GetStationNames();
     }
 }

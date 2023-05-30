@@ -2,8 +2,10 @@
 using Api.Models;
 using Api.Models.Models;
 using Api.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SqlServer.Server;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
 
@@ -20,35 +22,35 @@ namespace Api.Services
 
         public async Task<JourneyAbstract> CreateJourney(JourneyAbstract journey)
         {
-            var departureStation = _dBContext.Stations.Where(station => station.Id == journey.Departure_station_id && station.Nimi == journey.Departure_station_name).FirstOrDefault();
-            var returnStation = _dBContext.Stations.Where(station => station.Id == journey.Return_station_id && station.Nimi == journey.Return_station_name).FirstOrDefault();
+            var departureStation = _dBContext.Stations.Where(station => station.id == journey.departure_station_id && station.nimi == journey.departure_station_name).FirstOrDefault();
+            var returnStation = _dBContext.Stations.Where(station => station.id == journey.return_station_id && station.nimi == journey.return_station_name).FirstOrDefault();
 
             if (returnStation == null)
             {
-                throw new InvalidInputException("Return_station", journey.Return_station_id, journey.Return_station_name);
+                throw new InvalidInputException("Return_station", journey.return_station_id, journey.return_station_name);
             }
             if (departureStation == null)
             {
-                throw new InvalidInputException("Departure_station", journey.Departure_station_id, journey.Departure_station_name);
+                throw new InvalidInputException("Departure_station", journey.departure_station_id, journey.departure_station_name);
             }
-            if (journey.Covered_distance_m < 10)
+            if (journey.covered_distance_m < 10)
             {
-                throw new InvalidInputException("Covered_distance_m", journey.Covered_distance_m);
+                throw new InvalidInputException("Covered_distance_m", journey.covered_distance_m);
             }
-            if (journey.Duration_sec < 10)
+            if (journey.duration_sec < 10)
             {
-                throw new InvalidInputException("Duration_sec", journey.Duration_sec);
+                throw new InvalidInputException("Duration_sec", journey.duration_sec);
             }
-            if (journey.Departure.Year != 2021)
+            if (journey.departure.Year != 2021)
             {
-                throw new InvalidInputException("Departure", journey.Departure.ToString());
+                throw new InvalidInputException("Departure", journey.departure.ToString());
             }
-            if (journey.Return.Year != 2021 || DateTime.Compare(journey.Departure, journey.Return) >= 0)
+            if (journey.returntime.Year != 2021 || DateTime.Compare(journey.departure, journey.returntime) >= 0)
             {
-                throw new InvalidInputException("Departure", journey.Return.ToString());
+                throw new InvalidInputException("Departure", journey.returntime.ToString());
             }
 
-            switch (journey.Departure.Month)
+            switch (journey.departure.Month)
             {
                 case 5:
                     May may = JsonConvert.DeserializeObject<May>(JsonConvert.SerializeObject(journey));
@@ -66,13 +68,14 @@ namespace Api.Services
                     await _dBContext.SaveChangesAsync();
                     return july;
                 default:
-                    throw new InvalidInputException("Departure", journey.Departure.ToString());
+                    throw new InvalidInputException("Departure", journey.departure.ToString());
             }
-
         }
 
-        public async Task<IEnumerable<JourneyAbstract>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month)
+        public async Task<IEnumerable<JourneyAbstract>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month, string departure, string returnTime, double distanceMin, double distanceMax, int durationMin, int durationMax)
         {
+            bool jtn = 1350 >= ((int)distanceMin * 1000);
+
             switch (order)
             {
                 case "Departure":
@@ -81,15 +84,27 @@ namespace Api.Services
                         if (descending)
                         {
                             return  await _dBContext.Mays
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Departure)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Mays
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Departure)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -99,15 +114,27 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Junes
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Departure)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Junes
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Departure)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -117,15 +144,27 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Julys
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Departure)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Julys
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Departure)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -136,15 +175,27 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Mays
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Return)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.returntime)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Mays
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Return)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.returntime)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -154,15 +205,27 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Junes
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Return)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.returntime)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Junes
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Return)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.returntime)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -172,15 +235,23 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Julys
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Return)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .OrderByDescending(journey => journey.returntime)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Julys
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Return)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.returntime)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -191,15 +262,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Mays
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Departure_station_name)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.departure_station_name)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Mays
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Departure_station_name)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.departure_station_name)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -209,15 +294,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Junes
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Departure_station_name)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.departure_station_name)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Junes
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Departure_station_name)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.departure_station_name)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -227,15 +326,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Julys
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Departure_station_name)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.departure_station_name)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Julys
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Departure_station_name)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.departure_station_name)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -246,15 +359,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Mays
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Return_station_name)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.return_station_name)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Mays
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Return_station_name)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.return_station_name)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -264,15 +391,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Junes
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Return_station_name)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.return_station_name)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Junes
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Return_station_name)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.return_station_name)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -282,15 +423,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Julys
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Return_station_name)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.return_station_name)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Julys
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Return_station_name)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.return_station_name)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -301,15 +456,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Mays
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Covered_distance_m)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= (int)distanceMin * 1000)
+                                .Where(journey => journey.covered_distance_m <= (int)distanceMax * 1000)
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.covered_distance_m)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Mays
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Covered_distance_m)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.covered_distance_m)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -319,15 +488,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Junes
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Covered_distance_m)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.covered_distance_m)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Junes
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Covered_distance_m)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.covered_distance_m)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -337,15 +520,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Julys
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Covered_distance_m)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.covered_distance_m)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Julys
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Covered_distance_m)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.covered_distance_m)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -356,15 +553,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Mays
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Duration_sec)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.duration_sec)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Mays
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Duration_sec)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.duration_sec)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -374,15 +585,29 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Junes
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Duration_sec)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.duration_sec)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Junes
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Duration_sec)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.duration_sec)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
@@ -392,19 +617,73 @@ namespace Api.Services
                         if (descending)
                         {
                             return await _dBContext.Julys
-                                .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                                .OrderByDescending(journey => journey.Duration_sec)
+                                .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                                .Where(journey => journey.departure >= DateTime.Parse(departure))
+                                .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                                .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                                .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                                .Where(journey => journey.duration_sec >= durationMin)
+                                .Where(journey => journey.duration_sec <= durationMax)
+                                .OrderByDescending(journey => journey.duration_sec)
+                                .ThenBy(journey => journey.departure)
                                 .Skip(offset)
                                 .Take(limit)
                                 .ToListAsync();
                         }
                         return await _dBContext.Julys
-                            .Where(journey => journey.Departure_station_name.ToLower().Contains(search.ToLower()) || journey.Return_station_name.ToLower().Contains(search.ToLower()))
-                            .OrderBy(journey => journey.Duration_sec)
+                            .Where(journey => journey.departure_station_name.ToLower().Contains(search.ToLower()) || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                            .Where(journey => journey.departure >= DateTime.Parse(departure))
+                            .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                            .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                            .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                            .Where(journey => journey.duration_sec >= durationMin)
+                            .Where(journey => journey.duration_sec <= durationMax)
+                            .OrderBy(journey => journey.duration_sec)
+                            .ThenBy(journey => journey.departure)
                             .Skip(offset)
                             .Take(limit)
                             .ToListAsync();
                     }
+            }
+        }
+
+        public async Task<int> GetJourneysCount(string search, int month, string departure, string returnTime, double distanceMin, double distanceMax, int durationMin, int durationMax)
+        {
+            switch(month)
+            {
+                case 5:
+                    return await _dBContext.Mays.Where(
+                        journey => journey.departure_station_name.ToLower().Contains(search.ToLower())
+                        || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                        .Where(journey => journey.departure >= DateTime.Parse(departure))
+                        .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                        .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                        .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                        .Where(journey => journey.duration_sec >= durationMin)
+                        .Where(journey => journey.duration_sec <= durationMax)
+                        .CountAsync();
+                case 6:
+                    return await _dBContext.Junes.Where(
+                        journey => journey.departure_station_name.ToLower().Contains(search.ToLower())
+                        || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                        .Where(journey => journey.departure >= DateTime.Parse(departure))
+                        .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                        .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                        .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                        .Where(journey => journey.duration_sec >= durationMin)
+                        .Where(journey => journey.duration_sec <= durationMax)
+                        .CountAsync();
+                default:
+                    return await _dBContext.Julys.Where(
+                        journey => journey.departure_station_name.ToLower().Contains(search.ToLower())
+                        || journey.return_station_name.ToLower().Contains(search.ToLower()))
+                        .Where(journey => journey.departure >= DateTime.Parse(departure))
+                        .Where(journey => journey.returntime <= DateTime.Parse(returnTime))
+                        .Where(journey => journey.covered_distance_m >= ((int)distanceMin * 1000))
+                        .Where(journey => journey.covered_distance_m <= ((int)distanceMax * 1000))
+                        .Where(journey => journey.duration_sec >= durationMin)
+                        .Where(journey => journey.duration_sec <= durationMax)
+                        .CountAsync();
             }
         }
     }

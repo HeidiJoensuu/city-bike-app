@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models.Models
 {
-    [Table("2021-05")]
+    [Table("may")]
     public class May: JourneyAbstract
     {
     }

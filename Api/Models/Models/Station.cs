@@ -3,19 +3,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models.Models
 {
-    [Table("kaupunkiPyoraAsemat")]
+    [Table("kaupunkipyoraasemat")]
     public class Station
     {
-        public int? Id { get; set; }
-        public string Nimi { get; set; }
-        public string Namn { get; set; }
-        public string Name { get; set; }
-        public string Osoite { get; set; }
-        public string Adress { get; set; }
-        public string? x { get; set; }
+        public int? id { get; set; }
+        public string nimi { get; set; }
+        public string namn { get; set; }
+        public string name { get; set; }
+        public string osoite { get; set; }
+        public string adress { get; set; }
+        public double x { get; set; }
 
-        public string? y { get; set; }
-        public int? Kapasiteet { get; set; }
+        public double y { get; set; }
+        public int? kapasiteet { get; set; }
+        public string? kaupunki { get; set; }
 
         [NotMapped]
         public May? may { get; set; }

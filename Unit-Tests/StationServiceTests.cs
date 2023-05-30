@@ -20,20 +20,20 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(0,10,"Name","",false);
+            var answer = await stationService.GetStations(0,10,"Name","",false);
             
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(9, stations.Count());
-            Assert.Equal("Eighth", stations.ElementAt(0).Name);
-            Assert.Equal("Fifth", stations.ElementAt(1).Name);
-            Assert.Equal("First", stations.ElementAt(2).Name);
-            Assert.Equal("Fourth", stations.ElementAt(3).Name);
-            Assert.Equal("Ninth", stations.ElementAt(4).Name);
-            Assert.Equal("Second", stations.ElementAt(5).Name);
-            Assert.Equal("Seventh", stations.ElementAt(6).Name);
-            Assert.Equal("Sixth", stations.ElementAt(7).Name);
-            Assert.Equal("Third", stations.ElementAt(8).Name);
+            Assert.NotNull(answer);
+            Assert.Equal(9, answer.Count());
+            Assert.Equal("Eighth", answer.ElementAt(0).name);
+            Assert.Equal("Fifth", answer.ElementAt(1).name);
+            Assert.Equal("First", answer.ElementAt(2).name);
+            Assert.Equal("Fourth", answer.ElementAt(3).name);
+            Assert.Equal("Ninth", answer.ElementAt(4).name);
+            Assert.Equal("Second", answer.ElementAt(5).name);
+            Assert.Equal("Seventh", answer.ElementAt(6).name);
+            Assert.Equal("Sixth", answer.ElementAt(7).name);
+            Assert.Equal("Third", answer.ElementAt(8).name);
         }
 
         [Fact]
@@ -46,15 +46,15 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(5, 10, "Name", "", false);
+            var answer = await stationService.GetStations(5, 10, "Name", "", false);
 
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(4, stations.Count());
-            Assert.Equal("Second", stations.ElementAt(0).Name);
-            Assert.Equal("Seventh", stations.ElementAt(1).Name);
-            Assert.Equal("Sixth", stations.ElementAt(2).Name);
-            Assert.Equal("Third", stations.ElementAt(3).Name);
+            Assert.NotNull(answer);
+            Assert.Equal(4, answer.Count());
+            Assert.Equal("Second", answer.ElementAt(0).name);
+            Assert.Equal("Seventh", answer.ElementAt(1).name);
+            Assert.Equal("Sixth", answer.ElementAt(2).name);
+            Assert.Equal("Third", answer.ElementAt(3).name);
         }
 
         [Fact]
@@ -67,14 +67,14 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(2, 3, "Name", "", false);
+            var answer = await stationService.GetStations(2, 3, "Name", "", false);
 
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(3, stations.Count());
-            Assert.Equal("First", stations.ElementAt(0).Name);
-            Assert.Equal("Fourth", stations.ElementAt(1).Name);
-            Assert.Equal("Ninth", stations.ElementAt(2).Name);
+            Assert.NotNull(answer);
+            Assert.Equal(3, answer.Count());
+            Assert.Equal("First", answer.ElementAt(0).name);
+            Assert.Equal("Fourth", answer.ElementAt(1).name);
+            Assert.Equal("Ninth", answer.ElementAt(2).name);
         }
 
         [Fact]
@@ -87,20 +87,20 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(0, 10, "Nimi", "", false);
+            var answer = await stationService.GetStations(0, 10, "Nimi", "", false);
 
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(9, stations.Count());
-            Assert.Equal("First", stations.ElementAt(0).Name);
-            Assert.Equal("Eighth", stations.ElementAt(1).Name);
-            Assert.Equal("Third", stations.ElementAt(2).Name);
-            Assert.Equal("Sixth", stations.ElementAt(3).Name);
-            Assert.Equal("Fourth", stations.ElementAt(4).Name);
-            Assert.Equal("Seventh", stations.ElementAt(5).Name);
-            Assert.Equal("Second", stations.ElementAt(6).Name);
-            Assert.Equal("Fifth", stations.ElementAt(7).Name);
-            Assert.Equal("Ninth", stations.ElementAt(8).Name);
+            Assert.NotNull(answer);
+            Assert.Equal(9, answer.Count());
+            Assert.Equal("First", answer.ElementAt(0).name);
+            Assert.Equal("Eighth", answer.ElementAt(1).name);
+            Assert.Equal("Third", answer.ElementAt(2).name);
+            Assert.Equal("Sixth", answer.ElementAt(3).name);
+            Assert.Equal("Fourth", answer.ElementAt(4).name);
+            Assert.Equal("Seventh", answer.ElementAt(5).name);
+            Assert.Equal("Second", answer.ElementAt(6).name);
+            Assert.Equal("Fifth", answer.ElementAt(7).name);
+            Assert.Equal("Ninth", answer.ElementAt(8).name);
         }
 
         [Fact]
@@ -113,13 +113,13 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(0, 10, "Name", "Ek", false);
+            var answer = await stationService.GetStations(0, 10, "Name", "Ek", false);
 
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(2, stations.Count());
-            Assert.Equal("Eighth", stations.ElementAt(0).Name);
-            Assert.Equal("Ninth", stations.ElementAt(1).Name);
+            Assert.NotNull(answer);
+            Assert.Equal(2, answer.Count());
+            Assert.Equal("Eighth", answer.ElementAt(0).name);
+            Assert.Equal("Ninth", answer.ElementAt(1).name);
         }
 
         [Fact]
@@ -132,11 +132,11 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(0, 10, "Name", "Xx", false);
+            var answer = await stationService.GetStations(0, 10, "Name", "Xx", false);
 
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(0, stations.Count());
+            Assert.NotNull(answer);
+            Assert.Equal(0, answer.Count());
         }
 
         [Fact]
@@ -149,20 +149,20 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(0, 10, "Name", "", true);
+            var answer = await stationService.GetStations(0, 10, "Name", "", true);
 
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(9, stations.Count());
-            Assert.Equal("Eighth", stations.ElementAt(8).Name);
-            Assert.Equal("Fifth", stations.ElementAt(7).Name);
-            Assert.Equal("First", stations.ElementAt(6).Name);
-            Assert.Equal("Fourth", stations.ElementAt(5).Name);
-            Assert.Equal("Ninth", stations.ElementAt(4).Name);
-            Assert.Equal("Second", stations.ElementAt(3).Name);
-            Assert.Equal("Seventh", stations.ElementAt(2).Name);
-            Assert.Equal("Sixth", stations.ElementAt(1).Name);
-            Assert.Equal("Third", stations.ElementAt(0).Name);
+            Assert.NotNull(answer);
+            Assert.Equal(9, answer.Count());
+            Assert.Equal("Eighth", answer.ElementAt(8).name);
+            Assert.Equal("Fifth", answer.ElementAt(7).name);
+            Assert.Equal("First", answer.ElementAt(6).name);
+            Assert.Equal("Fourth", answer.ElementAt(5).name);
+            Assert.Equal("Ninth", answer.ElementAt(4).name);
+            Assert.Equal("Second", answer.ElementAt(3).name);
+            Assert.Equal("Seventh", answer.ElementAt(2).name);
+            Assert.Equal("Sixth", answer.ElementAt(1).name);
+            Assert.Equal("Third", answer.ElementAt(0).name);
         }
 
         [Fact]
@@ -175,14 +175,14 @@ namespace Unit_Tests
 
             //Act
             StationService stationService = new StationService(cityBikeContextMock.Object);
-            var stations = await stationService.GetStations(1, 3, "Name", "S", true);
+            var answer = await stationService.GetStations(1, 3, "Name", "S", true);
 
             //Assert
-            Assert.NotNull(stations);
-            Assert.Equal(3, stations.Count());
-            Assert.Equal("Sixth", stations.ElementAt(0).Name);
-            Assert.Equal("Seventh", stations.ElementAt(1).Name);
-            Assert.Equal("Second", stations.ElementAt(2).Name);
+            Assert.NotNull(answer);
+            Assert.Equal(3, answer.Count());
+            Assert.Equal("Sixth", answer.ElementAt(0).name);
+            Assert.Equal("Seventh", answer.ElementAt(1).name);
+            Assert.Equal("Second", answer.ElementAt(2).name);
         }
 
         [Fact]
@@ -529,14 +529,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -545,7 +545,7 @@ namespace Unit_Tests
 
             //Assert
             Assert.NotNull(answer);
-            Assert.Equal(10, answer.Id);
+            Assert.Equal(10, answer.id);
 
 
         }
@@ -566,14 +566,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Ninth",
-                Namn = "Tionde",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Ninth",
+                namn = "Tionde",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -599,14 +599,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Nionde",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Nionde",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -632,14 +632,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "Yhdeksas",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "Yhdeksas",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -665,14 +665,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "0",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 0,
+                y = 60.244444,
             };
 
             //Act
@@ -698,14 +698,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "0",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 0,
             };
 
             //Act
@@ -731,14 +731,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 0,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 0,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -764,14 +764,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -797,14 +797,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "",
-                Nimi = "Kymmenes",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "",
+                nimi = "Kymmenes",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -830,14 +830,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "",
-                Osoite = "Kymmenes katu 10",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "",
+                osoite = "Kymmenes katu 10",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -863,14 +863,14 @@ namespace Unit_Tests
             cityBikeContextMock.Setup(table => table.Julys).Returns(mockJuly.Object);
             Station saveStation = new Station()
             {
-                Adress = "Tionde katan 10",
-                Kapasiteet = 15,
-                Name = "Tenth",
-                Namn = "Tionde",
-                Nimi = "Kymmenes",
-                Osoite = "",
-                x = "24.555555",
-                y = "60.244444",
+                adress = "Tionde katan 10",
+                kapasiteet = 15,
+                name = "Tenth",
+                namn = "Tionde",
+                nimi = "Kymmenes",
+                osoite = "",
+                x = 24.555555,
+                y = 60.244444,
             };
 
             //Act
@@ -878,6 +878,40 @@ namespace Unit_Tests
 
             //Assert
             await Assert.ThrowsAsync<MissingInputsException>(async () => await stationService.CreateStation(saveStation));
+        }
+
+        [Fact]
+        public async Task Get_StationCount_SearchSe()
+        {
+            //Arrange
+            var mock = TestDataHelper.GetFakeStations().BuildMock().BuildMockDbSet();
+            var cityBikeContextMock = new Mock<CityBikesDBContext>();
+            cityBikeContextMock.Setup(table => table.Stations).Returns(mock.Object);
+
+            //Act
+            StationService stationService = new StationService(cityBikeContextMock.Object);
+            var answer = await stationService.GetStationCount("Se");
+
+            //Assert
+            Assert.NotNull(answer);
+            Assert.Equal(2, answer);
+        }
+
+        [Fact]
+        public async Task Get_StationCount_SearchNone()
+        {
+            //Arrange
+            var mock = TestDataHelper.GetFakeStations().BuildMock().BuildMockDbSet();
+            var cityBikeContextMock = new Mock<CityBikesDBContext>();
+            cityBikeContextMock.Setup(table => table.Stations).Returns(mock.Object);
+
+            //Act
+            StationService stationService = new StationService(cityBikeContextMock.Object);
+            var answer = await stationService.GetStationCount("");
+
+            //Assert
+            Assert.NotNull(answer);
+            Assert.Equal(9, answer);
         }
     }
 }
