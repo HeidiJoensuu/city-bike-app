@@ -1,4 +1,4 @@
- services:
+services:
   api:
     image: ${DOCKER_REGISTRY-}api
     restart: always
@@ -41,6 +41,6 @@
       POSTGRES_USER: root
       POSTGRES_DB: citybike
    
-  volumes:
-    citybike-postgres-data:
-      driver: local
+volumes:
+  citybike-postgres-data:
+    driver: local
