@@ -1,0 +1,46 @@
+ services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    restart: always
+    build:
+      context: .
+      dockerfile: /api/Dockerfile
+    depends_on:
+        - db
+    ports: 
+      - 7124:80
+    environment:
+      DB_CONNECTION_STRING: "host=db; Port=5432; database=citybike; username=root; password=secret; Pooling=true"
+      PORT: 7124
+      HOST: localhost
+      CHOKIDAR_USEPOLLING: "true"
+  
+  client:
+    image: node:18.16.0-alpine3.16
+    command: sh -c "npm install && npm start"
+    ports: 
+      - 3000:3000
+    working_dir: /client
+    volumes: 
+      - ./client:/client
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+
+  db:
+    image: postgres:15.3-alpine3.18
+    restart: always
+    volumes:
+      - citybike-postgres-data:/var/lib/postgres
+      - ./databaseFiles/2021-05.csv:/csv/2021-05.csv
+      - ./databaseFiles/2021-06.csv:/csv/2021-06.csv
+      - ./databaseFiles/2021-07.csv:/csv/2021-07.csv
+      - ./databaseFiles/Helsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv:/csv/pyoraAsemat.csv
+      - ./createTables.sql:/docker-entrypoint-initdb.d/createTables.sql
+    environment: 
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: root
+      POSTGRES_DB: citybike
+   
+  volumes:
+    citybike-postgres-data:
+      driver: local
