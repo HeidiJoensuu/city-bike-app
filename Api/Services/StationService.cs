@@ -1,12 +1,8 @@
 ﻿using Api.Models;
 using Api.Models.DTOs;
 using Api.Models.Models;
-using Api.Utils;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 using AutoMapper.Internal;
-using System.Linq;
-using AutoMapper;
 using Api.Exceptions;
 using System.Reflection;
 
@@ -60,7 +56,7 @@ namespace Api.Services
 
         public async Task<StationInfoDTO> GetStationInfo(int id, int month)
         {
-            
+            //Setting default information for StationInfoDTO
             JourneyInfoDto journeyInfo = new JourneyInfoDto();
             List<string> popularReturns = null;
             List<string> popularDepartures = null;
@@ -95,7 +91,7 @@ namespace Api.Services
                     countOfDepartures = await _dBContext.Julys.Where(j => j.departure_station_id == id).CountAsync();
                     countOfReturns = await _dBContext.Julys.Where(j => j.return_station_id == id).CountAsync();
                     break;
-                default:
+                default: //All three months together
                     var popularReturnsAnswer = (await _dBContext.Mays.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync())
                         .Concat(await _dBContext.Junes.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync())
                         .Concat(await _dBContext.Julys.Where(j => j.departure_station_id == id).Select(j => j.return_station_name).ToListAsync())

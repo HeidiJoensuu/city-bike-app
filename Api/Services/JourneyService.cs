@@ -1,13 +1,8 @@
 ﻿using Api.Exceptions;
 using Api.Models;
 using Api.Models.Models;
-using Api.Utils;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Server;
 using Newtonsoft.Json;
-using System.Security.Cryptography;
 
 namespace Api.Services
 {
