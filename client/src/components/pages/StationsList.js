@@ -3,13 +3,14 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import TableComponent from "../TableComponent"
 
-
-
+/**
+ * This component contains data of stations as a list. 
+ * Calls TableComponent to render the data.
+ * @returns {JSX.element} Rendered list of stations page
+ */
 const StationsList = () => {
   const dispatch = useDispatch()
-  
   const { stationList, stationsCount } = useSelector(state => state.stations)
-  
   const [orderData, setOrderData] = useState({
     offset:0,
     limit:20,

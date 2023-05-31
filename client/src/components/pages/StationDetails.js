@@ -1,17 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDispatch,useSelector } from "react-redux"
 import { getIndividualStationInfo } from "../../reducers/stationReducer"
-import { Button, ButtonGroup, Grid, Paper, ToggleButton, ToggleButtonGroup, Typography, useMediaQuery } from "@mui/material"
+import {  Grid, Paper, ToggleButton, ToggleButtonGroup, Typography, useMediaQuery } from "@mui/material"
 import { strings } from "../../utils/localization"
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { ListGrid, ReturnButton, theme } from "../../styles"
 import { useNavigate } from "react-router-dom"
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer } from 'react-leaflet'
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
 import icon from '../../assets/StationMark.png'
 
-
+/**
+ * Renders the information page of selected station.
+ * @returns {JSX.element} Rendred station detail page
+ */
 const StationDetail = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -30,15 +33,17 @@ const StationDetail = () => {
   })
 
   L.Marker.prototype.options.icon = DefaultIcon
-/*
-  useEffect(() => {
-    dispatch(getIndividualStationInfo({id: id, month: selectedMonth}))
-  }, [selectedMonth])
-*/
+
   useEffect(() =>{
     mapCenter()
   }, [station])
 
+  /**
+   * Changes selecedMonth
+   * @param {Event} event default event 
+   * @param {strign} newAlignment Current selected month
+   * @returns {void}
+   */
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment === '') {
       setSelectedMonth("")
@@ -50,11 +55,20 @@ const StationDetail = () => {
     }
   }
 
+  /**
+   * Renders simple list of stations
+   * @param {Array<String>} listOfStations List of station
+   * @returns {JSX.Element} list of stations
+   */
   const stationList = (listOfStations) => {
     if(listOfStations)
       return listOfStations.map(list => <Typography key={list}>{list}</Typography>)
   }
 
+  /**
+   * Sets map center to it's new coordinates
+   * @returns {void}
+   */
   const mapCenter = () => {
     if (station.x && map!== null) {
       map.flyTo([station.y, station.x], 15)
@@ -62,6 +76,7 @@ const StationDetail = () => {
       marker.setLatLng([station.y, station.x])
     }
   }
+
   const markerLocation = useMemo(() => (
     <Marker position={center} ref={setMarker}>
     </Marker>

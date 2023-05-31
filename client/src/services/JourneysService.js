@@ -3,12 +3,8 @@ import { config } from '../utils/config'
 
 /**
  * Fetch list of journeys from api
- * @param {Number} data.offset
- * @param {Number} data.limit 
- * @param {String} data.order
- * @param {String} data.search 
- * @param {Boolean} data.desc 
- * @param {Number} data.month 
+ * @param {Object} data {offset: Number, limit: Number, order: String, Descending: Boolean, month: Number}
+ * (optionals):{search: String, departure: String, returntime: String, distanceMin: Number, distanceMax: Number, durationMin: Number, durationMax: Number}
  * @returns {Object} Response from api
  */
 export const getJourneys = async (data) => {
@@ -26,6 +22,7 @@ export const getJourneys = async (data) => {
 
 /**
  * Posts new journey to api
+ * @param {Object} data new journey
  * @param {Date} data.departure
  * @param {Date} data.returntime
  * @param {Number} data.departure_station_id
@@ -41,6 +38,11 @@ export const postJourney = async (data) => {
   return response.data
 }
 
+/**
+ * Fetch count of journeys from api
+ * @param {Object} data {month: Number} (optionals):{search: String, departure: String, returntime: String, distanceMin: Number, distanceMax: Number, durationMin: Number, durationMax: Number}
+ * @returns {Object} Response from api
+ */
 export const getJourneysCounted =async (data) => {
   let url = `${config.url}Journeys/count?month=${data.month}`
   url += `${data.search ? `&search=${data.search}` : ``}`

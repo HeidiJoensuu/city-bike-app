@@ -1,7 +1,5 @@
-import styled from "@emotion/styled";
-import { Button, Grid, TableCell, TableRow, ToggleButtonGroup, createTheme, tableCellClasses } from "@mui/material";
-import {enUS, fiFI, svSE} from '@mui/material/locale'
-
+import styled from "@emotion/styled"
+import { Button, Grid, TableCell, createTheme, tableCellClasses } from "@mui/material"
 
 export const theme = createTheme(
   {

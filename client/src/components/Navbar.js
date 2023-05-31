@@ -9,13 +9,17 @@ import { strings } from "../utils/localization"
 import { Height } from "@mui/icons-material"
 
 /**
- * 
- * @returns 
+ * Renders page logo and navigation bar
+ * @returns {JSX.Element} Rendered navigation bar
  */
 const Navbar = ({ language, changeLanguageHandler }) => {
   const small = useMediaQuery(theme.breakpoints.down("laptop"))
   const navigate = useNavigate()
 
+  /**
+   * Checks the current page
+   * @returns {String} current page
+   */
   const checkCurrentPage = () => {
     return location.pathname.split('/')[1]
   }

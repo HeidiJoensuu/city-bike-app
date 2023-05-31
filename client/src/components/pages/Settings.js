@@ -1,8 +1,8 @@
 import { Autocomplete, Backdrop, Button, Grid, Paper, Popover, TextField, Typography, useMediaQuery } from "@mui/material"
-import { useEffect, useMemo, useState } from "react"
-import AddLocationAltSharpIcon from '@mui/icons-material/AddLocationAltSharp';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import { useEffect, useState } from "react"
+import AddLocationAltSharpIcon from '@mui/icons-material/AddLocationAltSharp'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import { useDispatch, useSelector } from "react-redux"
 import { createStation, getStationsNamesAll } from "../../reducers/stationReducer"
 import { DateTimeField, LocalizationProvider } from "@mui/x-date-pickers"
@@ -12,10 +12,14 @@ import dayjs from "dayjs"
 import L from "leaflet"
 import { validateIsItIntegerNumber, validateIsItNumber } from "../../utils/validation"
 import { theme } from "../../styles"
-import { MapContainer, Marker, Popup, TileLayer, useMapEvent, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMapEvent } from "react-leaflet"
 import icon from '../../assets/StationMark.png'
-import { createJourney } from "../../reducers/journeyReducer";
+import { createJourney } from "../../reducers/journeyReducer"
 
+/**
+ * This component returns page of admin settings for creating new journeys and stations
+ * @returns {JSX.element} Rendered settings page
+ */
 const Settings = () => {
   const dispatch = useDispatch()
   const small = useMediaQuery(theme.breakpoints.down("674"))
@@ -59,6 +63,10 @@ const Settings = () => {
 
   L.Marker.prototype.options.icon = DefaultIcon
   
+  /**
+   * Checks and gives correct language option for LocalizationProvider
+   * @returns {String} current selected language
+   */
   const language = () => {
     if (localStorage.getItem("language") === "gb") return "en-gb"
     if (localStorage.getItem("language") === "se") return "sv"
@@ -74,6 +82,10 @@ const Settings = () => {
   }, [stationNamesList])
 
 
+  /**
+   * Sorts stationNameList into alphabetical order.
+   * @returns {void}
+   */
   const sortStations = () => {
     if (stationNamesList.length !== 0) {
       stationNames = stationNamesList.map(currentStation => {
@@ -85,50 +97,82 @@ const Settings = () => {
   }
   sortStations()
 
+  /**
+   * Capitalizes the given string
+   * @param {String} string String to be capitalized
+   * @returns {String} Capitalized string
+   */
   const capitalize =(string) => {
     return string.charAt(0).toUpperCase() + string.slice(1)
   }
 
+  /**
+   * Validates given inputs for new journey. Either passes new data to reducer or sets error message to open.
+   * @param {Event} event default event
+   * @returns {void}
+   */
   const handleJourneyClick = (event) => {
+    /**
+     * Sets error messade sets popover to open.
+     * @param {Event} event default event
+     * @param {String} target error message
+     * @returns {void}
+     */
     const handlePopoverOpen = (event, target) => {
       setErrorMessage(target)
       setAnchorJourney(event.currentTarget)
     }
     const data = newJourney
 
+    //Checnking if time based inputs are valid
     if (newJourney.departure.isBefore(dayjs(`2021-05-01T00:00`))) return handlePopoverOpen(event, strings.departure)
     if (newJourney.departure.isAfter(dayjs(`2021-12-31T23:59:59`))) return handlePopoverOpen(event, strings.departure)
     if (newJourney.returntime.isBefore(dayjs(`2021-05-01T00:00`))) return handlePopoverOpen(event, strings.returntime)
     if (newJourney.returntime.isAfter(dayjs(`2021-12-31T23:59:59`))) return handlePopoverOpen(event, strings.returntime)
 
+    //Checking if selected departure and return stations are valid
     const departureStationId = stationNamesList.find(station  => newJourney.departure_station_name === station.nimi)
     if (departureStationId) newJourney.departure_station_id = departureStationId.id
     else return handlePopoverOpen(event, strings.departureStationName)
-
     const returnStationId = stationNamesList.find(station  => newJourney.return_station_name === station.nimi)
     if (returnStationId) newJourney.return_station_id = returnStationId.id
     else return handlePopoverOpen(event, strings.returnStationName)
 
+    //Checnking if number input are valid
     newJourney.duration_sec = newJourney.returntime.diff(newJourney.departure, 'second')
     if (validateIsItIntegerNumber(newJourney.covered_distance_m) !== "" || Number(newJourney.covered_distance_m) < 10) return handlePopoverOpen(event, strings.coveredDistanceM)
-    if (validateIsItIntegerNumber(newJourney.duration_sec) !== "") return handlePopoverOpen(event, `${strings.departure}/${strings.returntime}`)
+    if (validateIsItIntegerNumber(newJourney.duration_sec) !== "" || Number(newJourney.duration_sec) < 10) return handlePopoverOpen(event, `${strings.departure}/${strings.returntime}`)
     
+    //Saving inputs into correct format
     const currentDeparture = newJourney.departure.format()
     const currentReturn = newJourney.returntime.format()
     data.departure = currentDeparture.slice(0, currentDeparture.indexOf('+'))
     data.returntime = currentReturn.slice(0, currentReturn.indexOf('+'))
     if (typeof newJourney.covered_distance_m === "string") data.covered_distance_m = Number(newJourney.covered_distance_m)
     
+    //Calling reducer
     dispatch(createJourney(data))
   }
 
+  /**
+   * Validates given inputs for new station. Either passes new data to reducer or sets error message to open.
+   * @param {Event} event default event
+   * @returns {void}
+   */
   const handleStationClick = (event) => {
+    /**
+     * Sets error messade sets popover to open.
+     * @param {Event} event default event
+     * @param {String} target error message
+     * @returns {void}
+     */
     const handlePopoverOpen = (event, target) => {
       setErrorMessage(target)
       setAnchorStation(event.currentTarget)
     }
     const data = {}
 
+    //Checking if given names are there and not dublicates
     if (newStation.nimi === "") return handlePopoverOpen(event, `Nimi`)
     if (newStation.namn === "") return handlePopoverOpen(event, `Namn`)
     if (newStation.name === "") return handlePopoverOpen(event, `Name`)
@@ -138,11 +182,12 @@ const Settings = () => {
     if (newStation.osoite === "") return handlePopoverOpen(event, `Osoite`)
     if (newStation.adress === "") return handlePopoverOpen(event, `Adress`)
 
+    //Checking given numbers
     if (validateIsItNumber(newStation.x) !== "" || newStation.x === 0) return handlePopoverOpen(event, 'x')
-    
     if (validateIsItNumber(newStation.y) !== "" || newStation.y === 0) return handlePopoverOpen(event, 'y')
     if (validateIsItIntegerNumber(newStation.kapasiteet) !== "" || newStation.kapasiteet=== 0) return handlePopoverOpen(event, strings.capacity)
 
+    //Saving inputs into correct format
     data.nimi = capitalize(newStation.nimi)
     data.namn = capitalize(newStation.namn)
     data.name = capitalize(newStation.name)
@@ -154,15 +199,24 @@ const Settings = () => {
     else data.y = newStation.y
     if (typeof newStation.kapasiteet === "string") data.kapasiteet = Number(newStation.kapasiteet)
 
+    //Calling reducer
     dispatch(createStation(data))
   }
 
+  /**
+   * Closes error message
+   * @returns {void}
+   */
   const handlePopoverClose = () => {
     setAnchorJourney(null)
     setAnchorStation(null)
     setErrorMessage("")
   }
 
+  /**
+   * Listens users click inputs in map.
+   * @returns {void}
+   */
   const ClickListener = () => {
     const map = useMapEvent('click', (e) => {
       setMarker([e.latlng.lat, e.latlng.lng])
@@ -170,6 +224,11 @@ const Settings = () => {
     return null
   }
 
+  /**
+   * Saves selected coordinates and removes marker
+   * @param {Boolean} save Tells if there are coordinates to be saved
+   * @return {void}
+   */
   const handleMapClose = (save) => {
     setOpenMap(false)
     if (save)
@@ -210,7 +269,7 @@ const Settings = () => {
         </Backdrop>
         <Grid container direction="row" justifyContent={small ? "center" : "space-between"}>
           <div style={{width:"45%", display: "flex", flexDirection: "column", marginLeft: "20px", minWidth:"300px"}}>
-            <Typography variant={"h2"}>{strings.newStation}</Typography>
+            <Typography variant={"h2"}>{strings.newJourney}</Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={language()} >
               <DateTimeField
                 label={strings.departure}
@@ -237,7 +296,7 @@ const Settings = () => {
               }}
               inputValue={inputValueDeparture}
               onInputChange={(event, newInputValue) => {
-                setInputValueDeparture(newInputValue);
+                setInputValueDeparture(newInputValue)
               }}
               renderInput={(params) => <TextField {...params} label={strings.departureStationName} />}
               
@@ -282,7 +341,7 @@ const Settings = () => {
           </div>
 
           <div style={{width:"45%", display: "flex", flexDirection: "column", marginRight: "20px", minWidth:"300px"}}>
-            <Typography variant={"h2"}>{strings.newJourney}</Typography>
+            <Typography variant={"h2"}>{strings.newStation}</Typography>
             <TextField
               label="Nimi"
               value={newStation.nimi}

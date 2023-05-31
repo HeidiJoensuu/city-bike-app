@@ -1,18 +1,9 @@
 import axios from "axios"
 import { config } from '../utils/config'
 
-const headers = {
-  'Content-Type': 'application/json, text/plain'
-}
-
 /**
  * Fetch list of stations from api
- * @param {Number} data.offset
- * @param {Number} data.limit 
- * @param {String} data.order
- * @param {String} data.search 
- * @param {Boolean} data.desc 
- * @param {Number} data.month 
+ * @param {Object} data {offset: Number, limit: Number, order: String, Descending: Boolean, month: Number, (optional) search: String}
  * @returns {Object} Response from api
  */
 export const getStations = async (data) => {
@@ -23,8 +14,7 @@ export const getStations = async (data) => {
 
 /**
  * Fetch information of individual station from api
- * @param {Number} data.id
- * @param {Number} data.month 
+ * @param {Number} data {id: Number, month: Number}
  * @returns {Object} Response from api
  */
 export const getStationInfo = async (data) => {
@@ -51,12 +41,21 @@ export const postStation = async (data) => {
   return response.data
 }
 
+/**
+ * Fetch count of stations
+ * @param {Object} data {(optional)search: String}
+ * @returns {Object} Response from api
+ */
 export const getNumberOfStations = async (data) => {
   const url = `${config.url}Station/count${data.search ? `?search=${data.search}` : ``}`
   const response = await axios.get(url)
   return response.data
 }
 
+/**
+ * Fetches all station names
+ * @returns {Object} Response from api
+ */
 export const getStationsNames = async () => {
   const response = await axios.get(`${config.url}Station/names`)
   return response.data

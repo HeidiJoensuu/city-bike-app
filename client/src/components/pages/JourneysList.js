@@ -3,6 +3,11 @@ import { useDispatch, useSelector } from "react-redux"
 import { getJourneysAsList, getJourneysCount } from "../../reducers/journeyReducer"
 import TableComponent from "../TableComponent"
 
+/**
+ * This component contains data of journeys as a list. 
+ * Calls TableComponent to render the data.
+ * @returns {JSX.element} Rendered list of journeys page
+ */
 const JourneysList = () => {
   const dispatch = useDispatch()
   const {journeysCount, journeyList} = useSelector(state => state.journeys)
@@ -14,6 +19,7 @@ const JourneysList = () => {
     desc: false,
     month: 5
   })
+
   const [filterData, setFilterData] = useState(JSON.parse(sessionStorage.getItem("filter")) || {
     departure: "",
     returntime: "",
@@ -44,6 +50,10 @@ const JourneysList = () => {
     }
   }, [orderData, filterData])
 
+  /**
+   * Checks if there are changes in filterdata between useState and localstorage
+   * @returns {Boolean} True = there are changes
+   */
   const filterHasChanges = () => {
     let isThereChange = false
     for (const element in filterData) {
@@ -53,6 +63,10 @@ const JourneysList = () => {
     return isThereChange
   }
 
+  /**
+   * Checks if there are changes in orderdata between useState and localstorage
+   * @returns {Boolean} True = there are changes
+   */
   const orderHasChanges = () => {
     let isThereChange = false
     for (const element in orderData) {

@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import ErrorHandler from "./components/ErrorHandler"
+import NotificationHandler from "./components/NotificationHandler"
 import Navbar from "./components/Navbar"
 import JourneysList from "./components/pages/JourneysList"
 import StationsList from "./components/pages/StationsList"
 import StationDetail from "./components/pages/StationDetails"
 import { useEffect, useMemo, useState } from "react"
 import { strings } from "./utils/localization"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
 import LoadingScreen from "./components/LoadingScreen"
 import { ThemeProvider, createTheme } from "@mui/material"
 import { theme } from "./styles"
@@ -16,10 +16,9 @@ import Settings from "./components/pages/Settings"
 
 /**
  * Combines different components and pages into one render
- * @returns {jsx.element}
+ * @returns {jsx.element} Application
  */
 const App = () => {
-  const dispatch = useDispatch()
   const [language, setLanguage] = useState("fi")
   const {loadingStations} = useSelector(state => state.stations)
   const {loadingJourneys} = useSelector(state => state.journeys)
@@ -34,6 +33,10 @@ const App = () => {
     if (savedLanguage) changeLanguageHandler(savedLanguage)
   }, [language])
 
+  /**
+   * Returns new format of current selected language
+   * @returns {String} current language
+   */
   const languageAlter = () => {
     switch (language) {
     case "fi":
@@ -64,7 +67,7 @@ const App = () => {
       <BrowserRouter>
         <div className="App">
           {loadingStations || loadingJourneys ? <LoadingScreen /> : <></>}
-          <ErrorHandler />
+          <NotificationHandler />
           <Navbar 
             language={language}
             changeLanguageHandler={changeLanguageHandler}/>

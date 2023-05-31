@@ -7,6 +7,16 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import dayjs from "dayjs"
 
+/**
+ * Renders card of filters for journeys
+ * @param {Object} filterData Contains data of saved filter values
+ * @param {ReferenceState} setFilterData Sets new values to filterData
+ * @param {Number} selectedMonth Current selected month
+ * @param {Object} orderData Contains data of saved order values
+ * @param {ReferenceState} setOrderData Sets new value to orderData
+ * @param {ReferenceState} setSelectedMonth Sets new value to selectedMonth
+ * @returns {JSX.Element} rendered filter card
+ */
 const FilterCard = ({filterData, setFilterData, selectedMonth, orderData, setOrderData, setSelectedMonth}) => {
   const [enableHours, setEnableHours] = useState(filterData?.durationMin >= 60)
   const [departureFilter, setDepartureFilter] = useState(filterData?.departure ? dayjs(filterData?.departure) : "")
@@ -21,12 +31,21 @@ const FilterCard = ({filterData, setFilterData, selectedMonth, orderData, setOrd
   const [maxStartTime, setMaxStartTime] = useState(dayjs(`2021-0${selectedMonth}-${new Date(2021, selectedMonth, 0).getDate()}T23:59:59`))
   const maxEndTime = dayjs(`2021-12-31T23:59:59`)
 
+  /**
+   * Checks and gives correct language option for LocalizationProvider
+   * @returns {String} current selected language
+   */
   const language = () => {
     if (localStorage.getItem("language") === "gb") return "en-gb"
     if (localStorage.getItem("language") === "se") return "sv"
     return "fi"
   }
 
+  /**
+   * Checks if there are any error in filter inputs.
+   * If there are errors this function disables the submit-button.
+   * @returns {Boolean} Disables or not the submit button
+   */
   const ableToSubmit = () => validateAll(
     selectedMonth,
     new Date(2021, selectedMonth, 0).getDate(),
@@ -40,6 +59,10 @@ const FilterCard = ({filterData, setFilterData, selectedMonth, orderData, setOrd
     durationMaxFilter
   )
 
+  /**
+   * Clears all filtering data form states.
+   * @returns {void}
+   */
   const clearFrom = () => {
     setDepartureFilter("")
     setReturnFilter("")
@@ -60,6 +83,10 @@ const FilterCard = ({filterData, setFilterData, selectedMonth, orderData, setOrd
     }))
   }
 
+  /**
+   * Submits/saves new filterdata
+   * @returns {void}
+   */
   const handleSubmit = () => {
     let durationMin = Number(durationMinFilter)
     let durationMax = Number(durationMaxFilter)
@@ -76,6 +103,12 @@ const FilterCard = ({filterData, setFilterData, selectedMonth, orderData, setOrd
     }))
   }
 
+  /**
+   * Changes all information that is related to selecedMonth
+   * @param {Event} event default event 
+   * @param {strign} newAlignment Current selected month
+   * @returns {void}
+   */
   const handleAlignment = (event, newAlignment) => {
     if (newAlignment !== null) {
       setSelectedMonth(newAlignment)

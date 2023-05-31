@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, InputAdornment, Paper, Table, TableBody, TableContainer, TableFooter, TableHead, TablePagination, TableRow, TableSortLabel, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { Box, Grid, IconButton, InputAdornment, Paper, Table, TableBody, TableContainer, TableFooter, TableHead, TablePagination, TableRow, TableSortLabel, TextField } from "@mui/material"
 import { StyledTableCell } from "../styles"
 import LastPage from '@mui/icons-material/LastPage'
 import FirstPage from '@mui/icons-material/FirstPage'
@@ -11,13 +11,23 @@ import { useState } from "react"
 import { strings } from "../utils/localization"
 import { useNavigate } from "react-router-dom"
 
-import dayjs from 'dayjs'
 import 'dayjs/locale/fi'
 import 'dayjs/locale/se'
 import 'dayjs/locale/en-gb'
 import FilterCard from "./FilterCard"
 import { useDispatch } from "react-redux"
 
+/**
+ * Gets array of data and renders it into table list.
+ * @param {Object} orderData Contains data of saved order values
+ * @param {ReferenceState} setOrderData Sets new value to orderData
+ * @param {Number} dataCount Tells how many items there are in current filtered data
+ * @param {Array<Object>} data Showing data
+ * @param {Object} orderNames Column headers
+ * @param {Object} filterData Contains data of saved filter values
+ * @param {ReferenceState} setFilterData Sets new values to filterData
+ * @returns {JSX.Element} Rendered table component
+ */
 const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, filterData, setFilterData}) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -26,6 +36,11 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
   const [currentSearch, setCurrentSearch] = useState("")
   const [openFilterCard, setOpenFilterCard] = useState(filterData ? true : false)
 
+  /**
+   * Sorts data based on selected header
+   * @param {String} orderName selected header
+   * @returns {void}
+   */
   const handleSorting = (orderName) => {
     if (orderData.order !== orderName) {
       setOrderData(orderData => ({
@@ -42,10 +57,18 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     }
   }
 
+  /**
+   * Sets rows width based on how many headers there are.
+   * @returns {String} new width as prosentage
+   */
   const rowWidth = () => {
     return `${100 / Object.keys(orderNames).length}%`
   }
 
+  /**
+   * Sets page to be 0
+   * @returns {void}
+   */
   const handleFirstPageButtonClick = () => {
     setPage(0)
     sessionStorage.setItem("page", 0)
@@ -55,6 +78,10 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     }))
   }
 
+  /**
+  * Sets page to be 1 smaller than current one
+  * @returns {void}
+  */
   const handleBackButtonClick = () => {
     setPage(page - 1)
     sessionStorage.setItem("page", page - 1)
@@ -64,6 +91,10 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     }))
   }
 
+  /**
+  * Sets page to be 1 bigger than current one
+  * @returns {void}
+  */
   const handleNextButtonClick = () => {
     setPage(page + 1)
     sessionStorage.setItem("page", page + 1)
@@ -73,6 +104,10 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     }))
   }
 
+  /**
+  * Sets page to be last possible number
+  * @returns {void}
+  */
   const handleLastPageButtonClick = () => {
     setPage(Math.max(0, Math.ceil(dataCount / orderData.limit) - 1))
     sessionStorage.setItem("page", Math.max(0, Math.ceil(dataCount / orderData.limit) - 1))
@@ -82,17 +117,34 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     }))
   }
 
+  /**
+   * Checks if selected target is already the previous header to be sorted.
+   * Then returns value depenging on the previous one.
+   * @param {String} target selected header
+   * @returns  {String} desc or asc
+   */
   const direction = (target) => {
     if (target === orderData.order) {
       if (!orderData.desc) return 'desc'
     }
     return 'asc'
   }
-  
+
+  /**
+   * Handle page change function for TablePagination
+   * @param {Event} event default event 
+   * @param {Number} newPage new pageNumber
+   * @returns {void}
+   */
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
 
+  /**
+   * Sets new limit of showing rows in table
+   * @param {Event} event default event 
+   * @returns {void}
+   */
   const handleChangeRowsPerPage = (event) => {
     setOrderData(orderData => ({
       ...orderData,
@@ -101,6 +153,10 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     setPage(0)
   }
 
+  /**
+   * Sets new seach value to orderData
+   * @returns {void}
+   */
   const handleSearch = () => {
     setOrderData(orderData => ({
       ...orderData,
@@ -108,12 +164,20 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     }))
   }
 
+  /**
+   * Navigates to the selected station's information
+   * @param {Number} id Selected station's id
+   * @returns {void}
+   */
   const handleNavigation = (id) => {
     dispatch(getIndividualStationInfo({id: id, month: ""}))
     navigate(`/stations/${id}`)
   }
 
-
+  /**
+   * Handles and renders options of table pagination
+   * @returns {JSX.Element} Rendered pagination options
+   */
   const TablePaginationActions = () => {
     return (
       <Box sx={{ flexShrink: 0, ml: 2.5 }}>
@@ -149,6 +213,10 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     )
   }
 
+  /**
+   * Renders table headers
+   * @returns {JSX.Element} Table headers
+   */
   const headers = () => {
     if (filterData) {
       console.log(orderNames);
@@ -179,6 +247,11 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
     })
   }
 
+  /**
+   * Renders current row into table
+   * @param {Object} row Current rendering row
+   * @returns {JSX.Element} Table Row
+   */
   const rowData = (row) => {
     return Object.entries(orderNames).map(([key]) => {
       if (typeof row[key.toLocaleLowerCase()] === "string") {
