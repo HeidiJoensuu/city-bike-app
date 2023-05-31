@@ -18,7 +18,6 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<CityBikesDBContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Db")));
-Console.WriteLine(builder.Configuration.GetConnectionString("Db"));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

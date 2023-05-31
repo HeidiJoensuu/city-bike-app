@@ -203,7 +203,7 @@ const TableComponent = ({orderData, setOrderData, dataCount, data, orderNames, f
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton type="button" sx={{ p: '10px', backgroundColor:"rgb(182, 217, 220)" }} aria-label="search" onClick={() => handleSearch()}>
+                <IconButton type="button" sx={{ p: '10px', backgroundColor:currentSearch !== orderData.search ? "rgb(182, 217, 220)" : "" }} aria-label="search" onClick={() => handleSearch()}>
                   <SearchIcon />
                 </IconButton>
               </InputAdornment>

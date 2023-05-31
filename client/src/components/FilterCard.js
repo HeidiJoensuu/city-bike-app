@@ -71,8 +71,8 @@ const FilterCard = ({filterData, setFilterData, selectedMonth, orderData, setOrd
       returntime: returnFilter ? returnFilter.format() : "",
       distanceMin: typeof distanceMinFilter === 'string' ? Number(distanceMinFilter.replace(",", ".")) : distanceMinFilter,
       distanceMax: typeof distanceMaxFilter === 'string' ? Number(distanceMaxFilter.replace(",", ".")) : distanceMaxFilter,
-      durationMin: Number(durationMin),
-      durationMax: Number(durationMax)
+      durationMin: Number(durationMin)*60,
+      durationMax: Number(durationMax)*60
     }))
   }
 

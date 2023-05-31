@@ -23,7 +23,6 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JourneyAbstract>>> GetJourneys(int offset, int limit, string order, string? search, bool descending, int month, string? departure, string? returnTime, double distanceMin, double distanceMax, int durationMin, int durationMax)
         {
-            Console.WriteLine($"{search}, {departure}, {returnTime}, {distanceMin}, {distanceMax}, {durationMin}, {durationMax}");
             if (search == null)
             {
                 search = "";

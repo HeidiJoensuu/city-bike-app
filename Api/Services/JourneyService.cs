@@ -74,7 +74,7 @@ namespace Api.Services
 
         public async Task<IEnumerable<JourneyAbstract>> GetJourneys(int offset, int limit, string order, string search, bool descending, int month, string departure, string returnTime, double distanceMin, double distanceMax, int durationMin, int durationMax)
         {
-            bool jtn = 1350 >= ((int)distanceMin * 1000);
+            Console.WriteLine($"{durationMin} | {durationMax}");
 
             switch (order)
             {
@@ -169,7 +169,7 @@ namespace Api.Services
                             .Take(limit)
                             .ToListAsync();
                     }
-                case "Return":
+                case "Returntime":
                     if (month == 5)
                     {
                         if (descending)

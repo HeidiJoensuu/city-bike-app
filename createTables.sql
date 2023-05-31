@@ -1,5 +1,7 @@
+CREATE SEQUENCE stations;
+
 CREATE TABLE IF NOT EXISTS kaupunkiPyoraAsemat (
-  FID INT PRIMARY KEY NOT NULL,
+  FID INT NOT NULL DEFAULT nextval('stations'),
   ID INT NOT NULL,
   Nimi VARCHAR ( 250 ) NOT NULL,
   Namn VARCHAR ( 250 ) NOT NULL,
@@ -16,7 +18,7 @@ CREATE TABLE IF NOT EXISTS kaupunkiPyoraAsemat (
 
 CREATE TABLE IF NOT EXISTS May (
   Departure timestamp NOT NULL,
-  ReturnTime timestamp NOT NULL,
+  Returntime timestamp NOT NULL,
   Departure_station_id INT NOT NULL,
   Departure_station_name VARCHAR ( 250 ) NOT NULL,
   Return_station_id INT NOT NULL,
@@ -71,7 +73,7 @@ AND a.ctid <> b.ctid;
 
 DELETE FROM june a USING (
   SELECT MIN(ctid) as ctid, departure, returnTime, departure_station_id, return_station_id, covered_distance_m, duration_sec 
-  FROM may 
+  FROM june 
   GROUP BY departure, returnTime, departure_station_id, return_station_id, covered_distance_m, duration_sec 
   HAVING COUNT(*) >1
 ) b
@@ -85,7 +87,7 @@ AND a.ctid <> b.ctid;
 
 DELETE FROM july a USING (
   SELECT MIN(ctid) as ctid, departure, returnTime, departure_station_id, return_station_id, covered_distance_m, duration_sec 
-  FROM may 
+  FROM july 
   GROUP BY departure, returnTime, departure_station_id, return_station_id, covered_distance_m, duration_sec 
   HAVING COUNT(*) >1
 ) b
@@ -100,3 +102,5 @@ AND a.ctid <> b.ctid;
 ALTER TABLE May ADD COLUMN id SERIAL PRIMARY KEY;
 ALTER TABLE June ADD COLUMN id SERIAL PRIMARY KEY;
 ALTER TABLE July ADD COLUMN id SERIAL PRIMARY KEY;
+
+ALTER SEQUENCE stations RESTART WITH 458;

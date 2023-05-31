@@ -31,9 +31,9 @@ services:
     restart: always
     volumes:
       - citybike-postgres-data:/var/lib/postgres
-      - ./databaseFiles/2021-05.csv:/csv/2021-05.csv
-      - ./databaseFiles/2021-06.csv:/csv/2021-06.csv
-      - ./databaseFiles/2021-07.csv:/csv/2021-07.csv
+      - ./databaseFiles/2021-05-edit.csv:/csv/2021-05.csv
+      - ./databaseFiles/2021-06-edit.csv:/csv/2021-06.csv
+      - ./databaseFiles/2021-07-edit.csv:/csv/2021-07.csv
       - ./databaseFiles/Helsingin_ja_Espoon_kaupunkipyöräasemat_avoin.csv:/csv/pyoraAsemat.csv
       - ./createTables.sql:/docker-entrypoint-initdb.d/createTables.sql
     environment: 
