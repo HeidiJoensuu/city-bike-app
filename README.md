@@ -56,14 +56,6 @@ Front end
 
 ## Setting up the project
 
-In this project these language versions and programs are used: 
-* npm 9.6.7 (9.5.1 also works)
-* C#/.NET 7.0.201
-* docker and 
-* Python 3.10.1. 
-
-Make sure you have these working.
-
 Clone this repository.
 
 Load these files into databaseFiles-folder
@@ -78,9 +70,7 @@ License and information: <https://www.avoindata.fi/data/en/dataset/hsl-n-kaupunk
 
 Then run alterCSVFiles.py -file. This file changes some headers and values in 2021-0X.csv files. For example, there is file header 'return' that does not go along with postgresql.
 
-Then open your terminal and go to *client* folder. There run ``` npm install ``` command.
-
-Then go to the root of this repository on run ```docker compose up --build```. This might take some time, but once it's ready you can should find website running in *http://localhost:3000*
+Then open your terminal and go to the root of this repository on run ```docker compose up --build```. This might take some time, but once it's ready you can should find website running in *http://localhost:3000*
 
 ## Front end structure
 ```
