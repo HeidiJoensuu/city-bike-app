@@ -30,6 +30,7 @@ This project contains all following requirements:
 - Extra
   - localization for finnish, swedish and english
   - whole project is able to run in docker compose
+  - self made "logo" for website
 
 ## Technologies used (Main ones)
 
