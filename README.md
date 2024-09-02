@@ -1,5 +1,7 @@
 # City bike app
 
+[Link to city-bike-client](https://github.com/HeidiJoensuu/city-bike-client)
+
 This project is based on solita's [pre-assigment exercise](https://github.com/solita/dev-academy-2023-exercise) 
 The goal was to made website for displaying data of HSL's citybike journeys based on May-July 2021.
 
